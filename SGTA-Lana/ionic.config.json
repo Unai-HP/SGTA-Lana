@@ -1,0 +1,7 @@
+{
+  "name": "SGTA-Lana",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
