@@ -12,6 +12,8 @@
   "dependencies": {
     "axios": "^0.27.1",
     "cheerio": "^1.0.0-rc.10",
+    "moment": "^2.29.3",
+    "moments": "^0.0.2",
     "pretty": "^2.0.0",
     "puppeteer": "^13.6.0",
     "request": "^2.88.2",
