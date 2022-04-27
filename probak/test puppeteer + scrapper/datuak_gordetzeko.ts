@@ -1,5 +1,4 @@
 import { Duration } from 'moment';
-import { Garraiobidea } from './garraiobidea';
 
 export interface Aukera {
     id: number; // Identifikazioa
