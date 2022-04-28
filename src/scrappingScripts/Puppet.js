@@ -11,8 +11,10 @@ class Puppet {
         this.page = await this.browser.newPage();
         await this.page.goto(url);
         await this.page.click('.AIC7ge > form:nth-child(2) > div:nth-child(1) > div:nth-child(1) > button:nth-child(1) > div:nth-child(1)');
-        await this.page.waitForSelector("div.m6QErb:nth-child(4)");
-        return this.page.content();
+        await this.page.waitForNavigation();
+        const html = await this.page.content();
+        this.browser.close();
+        return html;
     }
 
     async getDirections() {
@@ -24,8 +26,3 @@ class Puppet {
     }
 }
 exports.Puppet = Puppet;
-// open google maps and close
-// const p = new Puppet();
-// p.openGoogleMaps('https://www.google.com/maps/dir/?api=1&origin=Zalla&destination=Bilbao&travelmode=transit').then(async () => {
-//     p.close();
-// });
