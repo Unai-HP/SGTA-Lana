@@ -9,6 +9,7 @@ export interface Aukera {
         amaiera: string; // Amaiera ordua
         iraupena: Duration; // Iraupena ddhhmmss
     };
+    details: string; // Aukeraren xehetasunak
     informazioa?: string; // Adibidez, "18:52 desde Mimetiz"
     garraiobideak: Garraiobidea[]; // Garraiobideak
 }
@@ -28,8 +29,8 @@ interface Garraiobidea {
 }
 
 enum GarraioMota {
-    bus,
-    tren,
-    metro,
-    tranvia
+    Bus,
+    Train,
+    Subway,
+    Tram
 }
