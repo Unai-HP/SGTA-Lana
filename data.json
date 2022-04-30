@@ -1,0 +1,117 @@
+[
+  {
+    "id": 0,
+    "hasiera": "Bilbo",
+    "bukaera": "Sodupe",
+    "denbora": {
+      "hasiera": "05:35",
+      "bukaera": "06:01",
+      "iraupena": 26
+    },
+    "details": {
+      "informazioa": " 5:35 PM from Bilbao Intermodal ",
+      "etapak": [
+        {
+          "id": 0,
+          "izena": "BizkaiBus",
+          "hasiera": "Bilbao Intermodal",
+          "amaiera": "Sodupe (Geltokia/estación) (1197)",
+          "denbora": {
+            "hasiera": "05:35",
+            "bukaera": "06:01"
+          },
+          "mota": "Bus"
+        }
+      ]
+    }
+  },
+  {
+    "id": 1,
+    "hasiera": "Bilbo",
+    "bukaera": "Sodupe",
+    "denbora": {
+      "hasiera": "05:30",
+      "bukaera": "06:03",
+      "iraupena": 33
+    },
+    "details": {
+      "informazioa": " 5:30 PM from Bilbao Intermodal ",
+      "etapak": [
+        {
+          "id": 0,
+          "izena": "BizkaiBus",
+          "hasiera": "Bilbao Intermodal",
+          "amaiera": "Sodupe (Herriko Enparantza) (1531)",
+          "denbora": {
+            "hasiera": "05:30",
+            "bukaera": "06:02"
+          },
+          "mota": "Bus"
+        }
+      ]
+    }
+  },
+  {
+    "id": 2,
+    "hasiera": "Bilbo",
+    "bukaera": "Sodupe",
+    "denbora": {
+      "hasiera": "05:34",
+      "bukaera": "06:06",
+      "iraupena": 32
+    },
+    "details": {
+      "informazioa": " 5:34 PM from Bilbao-Abando station ",
+      "etapak": [
+        {
+          "id": 0,
+          "izena": "RENFE RAM",
+          "hasiera": "Bilbao-Abando station",
+          "amaiera": "Sodupe",
+          "denbora": {
+            "hasiera": "05:34",
+            "bukaera": "06:06"
+          },
+          "mota": "Train"
+        }
+      ]
+    }
+  },
+  {
+    "id": 3,
+    "hasiera": "Bilbo",
+    "bukaera": "Sodupe",
+    "denbora": {
+      "hasiera": "04:51",
+      "bukaera": "06:03",
+      "iraupena": 72
+    },
+    "details": {
+      "informazioa": " 5:10 PM from Autonomía 78 (Lantik) (308) ",
+      "etapak": [
+        {
+          "id": 1,
+          "izena": "BizkaiBus",
+          "hasiera": "Autonomía 78 (Lantik) (308)",
+          "amaiera": "Basurto Ospitalea/ Hospital Basurto (309)",
+          "denbora": {
+            "hasiera": "05:10",
+            "bukaera": "05:12"
+          },
+          "mota": "Bus"
+        },
+        {
+          "id": 3,
+          "izena": "BizkaiBus",
+          "hasiera": "Bilbao Intermodal",
+          "amaiera": "Gallarraga (Farmazia) (1530)",
+          "denbora": {
+            "hasiera": "05:30",
+            "bukaera": "06:02"
+          },
+          "mota": "Bus"
+        }
+      ]
+    }
+  }
+]
