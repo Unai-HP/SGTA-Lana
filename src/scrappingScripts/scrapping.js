@@ -9,35 +9,40 @@ class Scraper {
         this.puppet = new Puppet();
     }
 
-    async getBasicDirections(url) {
-        console.log("Getting basic directions for: " + url);
+    async getBasicData(url) {
+        console.log("Getting basic data...");
+        let directions = [];
 
-        // Array for data storage
-        let data = [];
+        const html = await this.puppet.getPreferenceDirectionsAllHtml(url);
 
-        // Get data from maps
-        const html = await this.puppet.getDirectionsHtml(url);
+        for (let i = 0; i < html.length; i++) {
+            directions.push(await this.getBasicDirections(html[i]));
+        }
+        
+        // save json file
+        const fs = require('fs');
+        fs.writeFileSync('data.json', JSON.stringify(directions, null, 2));
 
-        let $ = cheerio.load(html);
-
-        // TODO simplify this
-        // css regex erabiltzen da section-directions-trip duten div-ak lortzeko, nahi ditugunak. Child direnak erabili beharko litzateke.
-        $("div[id^='section-directions-trip']").each((i, elem) => {
-            data.push(this.extractBasicData(i, $(elem), url));
-        });
-
-        // Get details
-        data = this.getDetailedDirections(data);
-
-        return data;
+        return directions;
     }
 
-    extractBasicData (i, elem, url){
+    async getBasicDirections(html) {
+        console.log("Getting basic directions...");
+
+        let directions = [];
+        let $ = cheerio.load(html);
+
+        $("div[id^='section-directions-trip']").each((i, elem) => {
+            var basic_garraioa = this.extractBasicData(i, $(elem))
+            basic_garraioa.pref = $(".U8X7Nb > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > label:nth-child(2) > span:nth-child(1)").text();
+            directions.push(basic_garraioa);
+        });
+
+        return this.getDetailedDirections(directions);
+    }
+
+    extractBasicData (i, elem, full_html) {
         const id = i;
-        
-        const urlParams = new URLSearchParams(url);
-        const hasiera = urlParams.get("origin");
-        const bukaera = urlParams.get("destination");
 
         // ^ erabiltzen da css_selector-ean regex erabiltzeko. 
         const denbora = {
@@ -47,21 +52,16 @@ class Scraper {
         }
 
         // Denborari formatua aldatu
-        denbora.hasiera = moment(denbora.hasiera, "HH:mm");
-        denbora.bukaera = moment(denbora.bukaera, "HH:mm");
+        denbora.hasiera = moment(denbora.hasiera, "HH:mm a").format("HH:mm");
+        denbora.bukaera = moment(denbora.bukaera, "HH:mm a").format("HH:mm");
         // lortu desberdintazuna minututan
-        denbora.iraupena = moment.duration(denbora.bukaera.diff(denbora.hasiera)).asHours()*60;
-
-        denbora.hasiera = denbora.hasiera.format("HH:mm");
-        denbora.bukaera = denbora.bukaera.format("HH:mm");
+        denbora.iraupena = elem.find("div[class='Fk3sm fontHeadlineSmall']").text();
 
         const details_selector = '#' + elem.find("img").attr("id");
 
         // return a json with the data
         const data = {
                 id: id,
-                hasiera: hasiera,
-                bukaera: bukaera,
                 denbora: denbora,
                 details: details_selector
         }
@@ -70,7 +70,7 @@ class Scraper {
 
     async getDetailedDirections (json) {
         for (let i = 0; i < json.length; i++) {
-            json[i].details = await this.getDetails(json[i]);
+            json[i].details = await this.getGarraioaDetails(json[i]);
         }
 
         json = this.fillDirectiontransshipment(json);
@@ -86,15 +86,18 @@ class Scraper {
         return json;
     }
 
-    async getDetails(json) {
+    /**
+     * Garraio baten details-ak lortu.
+     * @param {json} garraioa - Garraio baten json-a, details gabe, selectorra bakarrik.
+     * @returns {json} garraioa - Garraio baten json-a, details-ekin.
+    */
+    async getGarraioaDetails(garraioa) {
         // String-a bada details-ak kargatu ez direla esan nahi du.
-        if (typeof json.details === "string") {
-            const details_html = await this.puppet.getDirectionDetailsHtml(json.details);
-
+        if (typeof garraioa.details === "string") {
+            const details_html = await this.puppet.getDirectionDetailsHtml(garraioa.details, garraioa.pref);
             const $ = cheerio.load(details_html);
 
             const informazioa = $("div.tUEI8e > span:nth-child(1)").text();
-            
             // $('.M3pmwc').html() menuaren informazioa lortzeko
             const etapak = await this.extractEtapakData($('.M3pmwc').html());
 
@@ -103,7 +106,7 @@ class Scraper {
                 etapak: etapak
             };
         } else {
-            return json.details;
+            return garraioa.details;
         }
         
     }
@@ -119,11 +122,11 @@ class Scraper {
             if (mota === "bus", "train", "tram" && mota !== undefined) {
 
                 let den_hasi = $(elem).find("div.Lp2Gff div.gnWycb div.qbarme").text();
-                den_hasi = moment(den_hasi, "HH:mm").format("HH:mm");
+                den_hasi = moment(den_hasi, "HH:mm a").format("HH:mm");
 
                 let den_bukaera = $(elem).find("div.Lp2Gff div.gnWycb div.o4X11d").text()
                                         + $(elem).find("div.Ni8Gpb span.T1PeR div.lEcnMb.pxLwif").text();
-                den_bukaera = moment(den_bukaera, "HH:mm").format("HH:mm");
+                den_bukaera = moment(den_bukaera, "HH:mm a").format("HH:mm");
 
                 etapak_data.push({
                     id: i,
@@ -157,13 +160,14 @@ class Scraper {
         return json;
     }
 
+    // Itxi puppeteer
     finish() {
         this.puppet.close();
     }
 }
 
 const scraper = new Scraper();
-scraper.getBasicDirections("https://www.google.com/maps/dir/?api=1&origin=Bilbo&destination=Sodupe&travelmode=transit").then(
+scraper.getBasicData("https://www.google.com/maps/dir/?api=1&origin=Madrid&destination=Paris&travelmode=transit").then(
     data => console.log('Success:' + data))
 .then(
     () => scraper.finish()

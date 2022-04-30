@@ -1,117 +1,261 @@
 [
-  {
-    "id": 0,
-    "hasiera": "Bilbo",
-    "bukaera": "Sodupe",
-    "denbora": {
-      "hasiera": "05:35",
-      "bukaera": "06:01",
-      "iraupena": 26
+  [
+    {
+      "id": 0,
+      "denbora": {
+        "hasiera": "00:45",
+        "bukaera": "14:56",
+        "iraupena": "14 hr 11 min"
+      },
+      "details": {
+        "informazioa": " 12:45 AM from Aeropuerto Madrid-Barajas T4 ",
+        "etapak": [
+          {
+            "id": 0,
+            "izena": "ALSA",
+            "hasiera": "Aeropuerto Madrid-Barajas T4",
+            "amaiera": "Estación de Autobuses de Burgos",
+            "denbora": {
+              "hasiera": "00:45",
+              "bukaera": "03:15"
+            },
+            "mota": "Bus"
+          },
+          {
+            "id": 1,
+            "izena": "ALSA",
+            "hasiera": "Estación de Autobuses de Burgos",
+            "amaiera": "Estación de Autobuses de San Sebastian",
+            "denbora": {
+              "hasiera": "03:15",
+              "bukaera": "06:40"
+            },
+            "mota": "Bus"
+          },
+          {
+            "id": 2,
+            "izena": "ALSA",
+            "hasiera": "Estación de Autobuses de San Sebastian",
+            "amaiera": "Burdeos",
+            "denbora": {
+              "hasiera": "08:30",
+              "bukaera": "12:00"
+            },
+            "mota": "Bus"
+          },
+          {
+            "id": 4,
+            "izena": "SNCF",
+            "hasiera": "Bordeaux Saint-Jean",
+            "amaiera": "Montparnasse",
+            "denbora": {
+              "hasiera": "12:13",
+              "bukaera": "14:20"
+            },
+            "mota": "Train"
+          },
+          {
+            "id": 6,
+            "izena": "Île-de-France Mobilités",
+            "hasiera": "Montparnasse",
+            "amaiera": "Gare de l'Est",
+            "denbora": {
+              "hasiera": "14:33",
+              "bukaera": "14:49"
+            },
+            "mota": "Subway"
+          }
+        ]
+      },
+      "pref": "Bus"
     },
-    "details": {
-      "informazioa": " 5:35 PM from Bilbao Intermodal ",
-      "etapak": [
-        {
-          "id": 0,
-          "izena": "BizkaiBus",
-          "hasiera": "Bilbao Intermodal",
-          "amaiera": "Sodupe (Geltokia/estación) (1197)",
-          "denbora": {
-            "hasiera": "05:35",
-            "bukaera": "06:01"
+    {
+      "id": 1,
+      "denbora": {
+        "hasiera": "00:45",
+        "bukaera": "22:25",
+        "iraupena": "21 hr 40 min"
+      },
+      "details": {
+        "informazioa": " 8:10 AM from Chamartin ",
+        "etapak": [
+          {
+            "id": 0,
+            "izena": "Renfe",
+            "hasiera": "Chamartin",
+            "amaiera": "Donostia-San Sebastián",
+            "denbora": {
+              "hasiera": "08:10",
+              "bukaera": "13:34"
+            },
+            "mota": "Train"
           },
-          "mota": "Bus"
-        }
-      ]
-    }
-  },
-  {
-    "id": 1,
-    "hasiera": "Bilbo",
-    "bukaera": "Sodupe",
-    "denbora": {
-      "hasiera": "05:30",
-      "bukaera": "06:03",
-      "iraupena": 33
+          {
+            "id": 1,
+            "izena": "Cercanías",
+            "hasiera": "Donostia-San Sebastián",
+            "amaiera": "Pasaia",
+            "denbora": {
+              "hasiera": "14:04",
+              "bukaera": "14:15"
+            },
+            "mota": "Train"
+          },
+          {
+            "id": 2,
+            "izena": "EuskotrenEuskotren",
+            "hasiera": "Pasaia",
+            "amaiera": "Gare de Hendaye",
+            "denbora": {
+              "hasiera": "14:27",
+              "bukaera": "14:52"
+            },
+            "mota": "Train"
+          },
+          {
+            "id": 3,
+            "izena": "SNCF",
+            "hasiera": "Gare de Hendaye",
+            "amaiera": "Montparnasse",
+            "denbora": {
+              "hasiera": "15:09",
+              "bukaera": "19:54"
+            },
+            "mota": "Train"
+          },
+          {
+            "id": 5,
+            "izena": "Île-de-France Mobilités",
+            "hasiera": "Montparnasse",
+            "amaiera": "Gare de l'Est",
+            "denbora": {
+              "hasiera": "20:09",
+              "bukaera": "20:25"
+            },
+            "mota": "Subway"
+          }
+        ]
+      },
+      "pref": "Bus"
     },
-    "details": {
-      "informazioa": " 5:30 PM from Bilbao Intermodal ",
-      "etapak": [
-        {
-          "id": 0,
-          "izena": "BizkaiBus",
-          "hasiera": "Bilbao Intermodal",
-          "amaiera": "Sodupe (Herriko Enparantza) (1531)",
-          "denbora": {
-            "hasiera": "05:30",
-            "bukaera": "06:02"
+    {
+      "id": 2,
+      "denbora": {
+        "hasiera": "09:15",
+        "bukaera": "04:32",
+        "iraupena": "19 hr 17 min"
+      },
+      "details": {
+        "informazioa": " 6:20 AM from Estación Madrid - Puerta de Atocha ",
+        "etapak": [
+          {
+            "id": 0,
+            "izena": "Renfe",
+            "hasiera": "Estación Madrid - Puerta de Atocha",
+            "amaiera": "Barcelona-Sants",
+            "denbora": {
+              "hasiera": "06:20",
+              "bukaera": "08:50"
+            },
+            "mota": "Train"
           },
-          "mota": "Bus"
-        }
-      ]
-    }
-  },
-  {
-    "id": 2,
-    "hasiera": "Bilbo",
-    "bukaera": "Sodupe",
-    "denbora": {
-      "hasiera": "05:34",
-      "bukaera": "06:06",
-      "iraupena": 32
+          {
+            "id": 1,
+            "izena": "Cercanías",
+            "hasiera": "Barcelona-Sants",
+            "amaiera": "Barcelone-Arc de Triomf",
+            "denbora": {
+              "hasiera": "08:54",
+              "bukaera": "09:02"
+            },
+            "mota": "Train"
+          },
+          {
+            "id": 3,
+            "izena": "BlaBlaBus",
+            "hasiera": "Barcelona Nord",
+            "amaiera": "Perpignan",
+            "denbora": {
+              "hasiera": "09:15",
+              "bukaera": "11:45"
+            },
+            "mota": "Bus"
+          },
+          {
+            "id": 5,
+            "izena": "SNCF",
+            "hasiera": "Perpignan",
+            "amaiera": "Paris Gare de Lyon",
+            "denbora": {
+              "hasiera": "12:45",
+              "bukaera": "17:46"
+            },
+            "mota": "Train"
+          }
+        ]
+      },
+      "pref": "Bus"
     },
-    "details": {
-      "informazioa": " 5:34 PM from Bilbao-Abando station ",
-      "etapak": [
-        {
-          "id": 0,
-          "izena": "RENFE RAM",
-          "hasiera": "Bilbao-Abando station",
-          "amaiera": "Sodupe",
-          "denbora": {
-            "hasiera": "05:34",
-            "bukaera": "06:06"
+    {
+      "id": 3,
+      "denbora": {
+        "hasiera": "16:40",
+        "bukaera": "09:16",
+        "iraupena": "16 hr 36 min"
+      },
+      "details": {
+        "informazioa": " 7:30 AM from Estación Madrid - Puerta de Atocha ",
+        "etapak": [
+          {
+            "id": 0,
+            "izena": "Renfe",
+            "hasiera": "Estación Madrid - Puerta de Atocha",
+            "amaiera": "Barcelona-Sants",
+            "denbora": {
+              "hasiera": "07:30",
+              "bukaera": "10:42"
+            },
+            "mota": "Train"
           },
-          "mota": "Train"
-        }
-      ]
+          {
+            "id": 1,
+            "izena": "Renfe",
+            "hasiera": "Barcelona-Sants",
+            "amaiera": "Portbou",
+            "denbora": {
+              "hasiera": "10:46",
+              "bukaera": "13:21"
+            },
+            "mota": "Train"
+          },
+          {
+            "id": 2,
+            "izena": "SNCF",
+            "hasiera": "Portbou",
+            "amaiera": "Perpignan",
+            "denbora": {
+              "hasiera": "14:04",
+              "bukaera": "15:01"
+            },
+            "mota": "Train"
+          },
+          {
+            "id": 3,
+            "izena": "SNCF",
+            "hasiera": "Perpignan",
+            "amaiera": "Paris Gare de Lyon",
+            "denbora": {
+              "hasiera": "15:33",
+              "bukaera": "20:48"
+            },
+            "mota": "Train"
+          }
+        ]
+      },
+      "pref": "Bus"
     }
-  },
-  {
-    "id": 3,
-    "hasiera": "Bilbo",
-    "bukaera": "Sodupe",
-    "denbora": {
-      "hasiera": "04:51",
-      "bukaera": "06:03",
-      "iraupena": 72
-    },
-    "details": {
-      "informazioa": " 5:10 PM from Autonomía 78 (Lantik) (308) ",
-      "etapak": [
-        {
-          "id": 1,
-          "izena": "BizkaiBus",
-          "hasiera": "Autonomía 78 (Lantik) (308)",
-          "amaiera": "Basurto Ospitalea/ Hospital Basurto (309)",
-          "denbora": {
-            "hasiera": "05:10",
-            "bukaera": "05:12"
-          },
-          "mota": "Bus"
-        },
-        {
-          "id": 3,
-          "izena": "BizkaiBus",
-          "hasiera": "Bilbao Intermodal",
-          "amaiera": "Gallarraga (Farmazia) (1530)",
-          "denbora": {
-            "hasiera": "05:30",
-            "bukaera": "06:02"
-          },
-          "mota": "Bus"
-        }
-      ]
-    }
-  }
+  ],
+  [],
+  [],
+  []
 ]
