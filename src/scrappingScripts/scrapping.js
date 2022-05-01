@@ -1,8 +1,7 @@
 const cheerio = require("cheerio");
 const { Puppet } = require("./Puppet");
 const moment = require("moment");
-const { html } = require("cheerio/lib/api/manipulation");
-const { Z_ASCII } = require("zlib");
+const Promise = require("bluebird");
 
 class Scraper {
     constructor() {
@@ -13,10 +12,11 @@ class Scraper {
         console.log("Getting basic data...");
         let directions = [];
 
-        const html = await this.puppet.getPreferenceDirectionsAllHtml(url);
-
-        for (let i = 0; i < html.length; i++) {
-            directions.push(await this.getBasicDirections(html[i]));
+        var html_dictionary = await this.puppet.getPreferenceDirectionsAllHtml(url)
+        for (const [key, value] of Object.entries(html_dictionary)) {
+            var basic_garraio_multzoa = this.getBasicDirections(value);
+            basic_garraio_multzoa.push({pref: key});
+            directions.push(basic_garraio_multzoa);
         }
         
         // save json file
@@ -26,7 +26,7 @@ class Scraper {
         return directions;
     }
 
-    async getBasicDirections(html) {
+    getBasicDirections(html) {
         console.log("Getting basic directions...");
 
         let directions = [];
@@ -34,11 +34,10 @@ class Scraper {
 
         $("div[id^='section-directions-trip']").each((i, elem) => {
             var basic_garraioa = this.extractBasicData(i, $(elem))
-            basic_garraioa.pref = $(".U8X7Nb > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > label:nth-child(2) > span:nth-child(1)").text();
             directions.push(basic_garraioa);
         });
 
-        return this.getDetailedDirections(directions);
+        return directions;
     }
 
     extractBasicData (i, elem, full_html) {
@@ -69,15 +68,26 @@ class Scraper {
     }
 
     async getDetailedDirections (json) {
-        for (let i = 0; i < json.length; i++) {
-            json[i].details = await this.getGarraioaDetails(json[i]);
+        if (true) {
+            console.log("Getting detailed directions...");
+            for (let garraio_multz = 0; garraio_multz < json.length; garraio_multz++) {
+                const pref = json[garraio_multz].pref;
+                console.log("Where 1");
+                await this.puppet.openPreference(pref);
+                console.log("Where 2");
+                for (let garraio = 0; garraio < json[garraio_multz].length; garraio++) {
+                    json[garraio_multz][garraio].details = await this.getGarraioaDetails(json[garraio_multz][garraio]);
+                }
+                console.log("Where 3");
+                await this.puppet.closePreference();
+            }
+        } else {
+            for (let i = 0; i < json.length; i++) {
+                json[i].details = await this.getGarraioaDetails(json[i]);
+            }
         }
-
+        
         json = this.fillDirectiontransshipment(json);
-
-        // for (let i = 0; i < json.length; i++) {
-        //     console.log(json[i].details.etapak)
-        // }
 
         // save json file 
         const fs = require('fs');
@@ -94,7 +104,8 @@ class Scraper {
     async getGarraioaDetails(garraioa) {
         // String-a bada details-ak kargatu ez direla esan nahi du.
         if (typeof garraioa.details === "string") {
-            const details_html = await this.puppet.getDirectionDetailsHtml(garraioa.details, garraioa.pref);
+            console.log("Getting details...");
+            const details_html = await this.puppet.getDirectionDetailsHtml(garraioa.details);
             const $ = cheerio.load(details_html);
 
             const informazioa = $("div.tUEI8e > span:nth-child(1)").text();
@@ -111,9 +122,9 @@ class Scraper {
         
     }
 
-    async extractEtapakData(etapak) {
+    async extractEtapakData(etapak_html) {
 
-        const $ = cheerio.load(etapak);
+        const $ = cheerio.load(etapak_html);
         const etapak_data = [];
 
         $("span[id^='transit_group_']").each((i, elem) => {
@@ -146,18 +157,38 @@ class Scraper {
 
     // Transbordoak egotean hauen amaiera lekua ez da etaparen parte, baina hurrengoaren hasiera lekua da.
     fillDirectiontransshipment(json){
-        // Bidaia bakoitzako
-        for (let i = 0; i < json.length; i++) {
-            // etapak lortu
-            for (let j = 0; j < json[i].details.etapak.length; j++) {
-                // eta etaparen amaiera hurrengoaren hasiera bihurtu, hau hutsa bada.
-                if (json[i].details.etapak[j].amaiera === "") {
-                    json[i].details.etapak[j].amaiera = json[i].details.etapak[j+1].hasiera;; 
+        if (json.hasOwnProperty("pref")) {
+            for (let garraio_multzoa = 0; garraio_multzoa < json.length; garraio_multzoa++) {
+                // Length - 1 pref datua ez artzeko
+                for (let garraioa = 0; garraioa < json.length - 1; garraioa++) {
+                    // etapak lortu
+                    for (let etapa = 0; etapa < json[garraio_multzoa][garraioa].details.etapak.length; etapa++) {
+                        // eta etaparen amaiera hurrengoaren hasiera bihurtu, hau hutsa bada.
+                        if (json[garraio_multzoa][garraioa].details.etapak[etapa].amaiera === "") {
+                            json[garraio_multzoa][garraioa].details.etapak[etapa].amaiera = json[garraio_multzoa][garraioa].details.etapak[etapa + 1].hasiera;;
+                        }
+                    }
                 }
-            }            
+            }
+        } else {
+            for (let garraioa = 0; garraioa < json.length; garraioa++) {
+                // etapak lortu
+                for (let etapa = 0; etapa < json[garraioa].details.etapak.length; etapa++) {
+                    // eta etaparen amaiera hurrengoaren hasiera bihurtu, hau hutsa bada.
+                    if (json[garraioa].details.etapak[etapa].amaiera === "") {
+                        json[garraioa].details.etapak[etapa].amaiera = json[garraioa].details.etapak[etapa + 1].hasiera;;
+                    }
+                }
+            }
         }
+        
 
         return json;
+
+        // Bidaia bakoitzako
+        function bidaiakFill() {
+            
+        }
     }
 
     // Itxi puppeteer
@@ -167,10 +198,11 @@ class Scraper {
 }
 
 const scraper = new Scraper();
-scraper.getBasicData("https://www.google.com/maps/dir/?api=1&origin=Madrid&destination=Paris&travelmode=transit").then(
-    data => console.log('Success:' + data))
-.then(
-    () => scraper.finish()
-);
-
+var data = [];
+data = scraper.getBasicData("https://www.google.com/maps/dir/?api=1&origin=Madrid&destination=Paris&travelmode=transit")
+Promise.all(data).then(function(values) {
+    //console.log(JSON.stringify(values, null, 2));
+    scraper.getDetailedDirections(values);
+    scraper.finish();
+});
 

@@ -15,24 +15,16 @@ class Puppet {
         return this.page.content();
     }
 
-    async getDirectionDetailsHtml(selector, pref = '') {
+    async getDirectionDetailsHtml(selector) {
         console.log('\tGetting details for: ' + selector);
         const backSelector = ".ysKsp";
 
-        console.log('Preference' + pref);
-        if (pref !== '') {
-            await this.openPreference(pref);
-        }
-
-        // wait a second
-        await this.page.waitFor(2000);
+        await this.page.waitForTimeout(2000);
 
         await this.page.waitForSelector(selector)
         await this.page.click(selector)
         // Lehenengo aldian bakarrik click bat egin behar da, baina hurrengoak 2
         try {
-            // wait a second
-            await this.page.waitFor(2000);
             await this.page.click(selector)
         } catch (error) {
             console.log("\t\tFirst datails click.")
@@ -40,15 +32,15 @@ class Puppet {
 
         console.log("\t\tTrip details clicked.")
 
-        await this.page.waitForSelector(backSelector)
-        await this.page.waitForSelector(backSelector)
+        await this.page.waitForNavigation({
+            waitUntil: 'networkidle2',
+        });
 
         // Get html
         const html = await this.page.content();
 
+        await this.page.waitForSelector(backSelector)
         await this.page.click(backSelector)
-
-        await this.page.waitForSelector(selector)
 
         console.log("\t\tTrip details closed.")
 
@@ -67,22 +59,23 @@ class Puppet {
 
     async getPreferenceDirectionsAllHtml(url) {
         await this.openGoogleMaps(url);
-        var htmls = [];
-
-        htmls.push(await this.getPreferenceByTypeHtml('Bus'));
-        htmls.push(await this.getPreferenceByTypeHtml('Train'));
-        htmls.push(await this.getPreferenceByTypeHtml('Tram'));
-        htmls.push(await this.getPreferenceByTypeHtml('Subway'));
+        var htmls = {
+            Bus: await this.getPreferencedDirectionsByTypeHtml('Bus'),
+            Train: await this.getPreferencedDirectionsByTypeHtml('Train'),
+            Tram: await this.getPreferencedDirectionsByTypeHtml('Tram'),
+            Subway: await this.getPreferencedDirectionsByTypeHtml('Subway')
+        }
 
         return htmls;
     }
 
-    async getPreferenceByTypeHtml(type, url = '') {
+    async getPreferencedDirectionsByTypeHtml(type, url = '') {
         if (url !== '') {
             await this.openGoogleMaps(url);
         }
 
         await this.openPreference(type);
+
         const html = await this.page.content();
         console.log("\t\t" + type + " preferences closed.")
         await this.closePreferences();
@@ -112,17 +105,16 @@ class Puppet {
                 break;
         }
 
-        await this.page.waitForNavigation({
-            waitUntil: 'networkidle2',
-        });
+        // wait 2 seconds
+        await this.page.waitForTimeout(2500);
     }
 
     async closePreferences() {  
         console.log("\t\tClosing preferences.")      
         const bus_selector = "#transit-vehicle-prefer-0"
-        const train_selector = ".U8X7Nb > div:nth-child(1) > div:nth-child(4) > div:nth-child(1) > label:nth-child(2)"
-        const tram_selector = ".U8X7Nb > div:nth-child(1) > div:nth-child(5) > div:nth-child(1) > label:nth-child(2)"
-        const subway_selector = ".U8X7Nb > div:nth-child(1) > div:nth-child(3) > div:nth-child(1) > label:nth-child(2)"
+        const train_selector = "#transit-vehicle-prefer-2"
+        const tram_selector = "#transit-vehicle-prefer-3"
+        const subway_selector = "#transit-vehicle-prefer-1"
         const close_selector = ".OcYctc > span:nth-child(2)"
 
         await this.page.waitForSelector(bus_selector)
