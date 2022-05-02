@@ -1,0 +1,31 @@
+[
+  {
+    "name": "CONSENT",
+    "value": "PENDING+775",
+    "domain": ".google.com",
+    "path": "/",
+    "expires": 1714591694.769265,
+    "size": 18,
+    "httpOnly": false,
+    "secure": true,
+    "session": false,
+    "sameParty": false,
+    "sourceScheme": "Secure",
+    "sourcePort": 443
+  },
+  {
+    "name": "__Secure-ENID",
+    "value": "4.SE=ggzVUDQZuIWxir-wqLeSfdahIHcG_TlYAzCBBKlnYbguYPxZlILWGLrA-868NqxfQlf7pyOrl4s11V8PHGxzhE6m5XWLSksqG45O_mAM0GjXMBR7whwbWiNIq2OBVBP74w4FnzakPgh_hSxpqYlSAPjut16yMVnan68bg6ofbvE",
+    "domain": ".google.com",
+    "path": "/",
+    "expires": 1685706392.768931,
+    "size": 189,
+    "httpOnly": true,
+    "secure": true,
+    "session": false,
+    "sameSite": "Lax",
+    "sameParty": false,
+    "sourceScheme": "Secure",
+    "sourcePort": 443
+  }
+]
