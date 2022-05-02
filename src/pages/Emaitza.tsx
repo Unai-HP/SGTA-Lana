@@ -15,11 +15,39 @@ import { moon, arrowBack, arrowForward } from "ionicons/icons";
 import './Emaitza.css';
 import 'leaflet/dist/leaflet.css';
 import { NominatimResponse }  from 'nominatim-browser';
+import moment from 'moment';
 
 
 //#region Aukerak
 let aukeraList: Aukera[] = [];
 let selectedAukera: Aukera;
+
+function aukeraKonparatuIraupena(a: Aukera, b: Aukera) {
+  let aMoment = moment(a.denbora.iraupena, 'dd:hh:mm');
+  let bMoment = moment(b.denbora.iraupena, 'dd:hh:mm');
+  if (aMoment < bMoment) return -1;
+  if (aMoment > bMoment) return 1;
+  return 0;
+}
+
+function aukeraKonparatuAmaiera(a: Aukera, b: Aukera) {
+  let aMoment = moment(a.denbora.amaiera, 'hh:mm');
+  let aMomentH = moment(a.denbora.hasiera, 'hh:mm');
+  let bMoment = moment(b.denbora.amaiera, 'hh:mm');
+  let bMomentH = moment(b.denbora.hasiera, 'hh:mm');
+  
+  if (aMoment < aMomentH) aMoment.add(1, 'days');
+  if (bMoment < bMomentH) bMoment.add(1, 'days');
+
+  if (aMoment < bMoment) return -1;
+  if (aMoment > bMoment) return 1;
+  return 0;
+}
+
+enum ordenMota {
+  azkarragoa,
+  lehenaAilegatzeko
+}
 //#endregion
 
 //#region LocalStorage(lekuak)
@@ -187,7 +215,7 @@ async function test(from: string, to: string) {
       denbora: {
         hasiera: '13:57',
         amaiera: '20:10',
-        iraupena: '50min'
+        iraupena: '00:50:00'
       },
       ibilbideak: [
         {
@@ -270,7 +298,7 @@ async function test(from: string, to: string) {
       denbora: {
         hasiera: '13:57',
         amaiera: '20:10',
-        iraupena: '50min'
+        iraupena: '00:20:00'
       },
       ibilbideak: [
         {
@@ -309,10 +337,18 @@ async function test(from: string, to: string) {
 //#region Components
 function AukerenZerrenda(props: any) {
   const [aukeraData, setAukeraData] = useState<Aukera[]>([]);
-
+  const [ordenazioa, setOrdenazioa] = useState<ordenMota>();
   useEffect(() => {
     // Unai sortutako funtzioarekin aldatu
     test(props.hasiera, props.helmuga).then(aukerak => {
+      if (ordenMota.azkarragoa === ordenazioa) {
+        aukerak.sort(aukeraKonparatuIraupena);
+      } else if (ordenMota.lehenaAilegatzeko === ordenazioa) {
+        aukerak.sort(aukeraKonparatuAmaiera);
+      }
+
+      aukerak.sort(aukeraKonparatuIraupena);
+      
       setAukeraData(aukerak);
     })
   })
