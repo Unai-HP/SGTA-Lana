@@ -1,4 +1,4 @@
-import { IonBackButton, IonButtons, IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonItem, IonLabel, IonList, IonListHeader, IonPage, IonRow, IonTitle, IonToolbar, IonIcon, IonToggle, ToggleChangeEventDetail, IonModal, IonButton, IonPopover, IonCardContent, IonImg, IonThumbnail, IonSkeletonText } from '@ionic/react';
+import { IonBackButton, IonButtons, IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonItem, IonLabel, IonList, IonListHeader, IonPage, IonRow, IonTitle, IonToolbar, IonIcon, IonToggle, ToggleChangeEventDetail, IonModal, IonButton, IonPopover, IonCardContent, IonImg, IonThumbnail, IonSkeletonText, IonRadioGroup, IonRadio } from '@ionic/react';
 import * as L from 'leaflet';
 import startIconSvg from '../img/start.svg';
 import transferIconSvg from '../img/transfer.svg';
@@ -25,8 +25,8 @@ let selectedAukera: Aukera;
 function aukeraKonparatuIraupena(a: Aukera, b: Aukera) {
   let aMoment = moment(a.denbora.iraupena, 'dd:hh:mm');
   let bMoment = moment(b.denbora.iraupena, 'dd:hh:mm');
-  if (aMoment < bMoment) return -1;
-  if (aMoment > bMoment) return 1;
+  if (aMoment.isBefore(bMoment)) return -1;
+  if (bMoment.isBefore(aMoment)) return 1;
   return 0;
 }
 
@@ -35,12 +35,12 @@ function aukeraKonparatuAmaiera(a: Aukera, b: Aukera) {
   let aMomentH = moment(a.denbora.hasiera, 'hh:mm');
   let bMoment = moment(b.denbora.amaiera, 'hh:mm');
   let bMomentH = moment(b.denbora.hasiera, 'hh:mm');
-  
-  if (aMoment < aMomentH) aMoment.add(1, 'days');
-  if (bMoment < bMomentH) bMoment.add(1, 'days');
+ 
+  if (aMoment.isBefore(aMomentH)) aMoment.add(1, 'days');
+  if (bMoment.isBefore(bMomentH)) bMoment.add(1, 'days');
 
-  if (aMoment < bMoment) return -1;
-  if (aMoment > bMoment) return 1;
+  if (aMoment.isBefore(bMoment)) return -1;
+  if (bMoment.isBefore(aMoment)) return 1;
   return 0;
 }
 
@@ -116,7 +116,6 @@ function aukeraIrudikatu(aukera: Aukera) {
 function markerSortu(lekua: string, index: Number, markerIcon: L.Icon) {
   // Konprobatu koordenatuak baditu, ez bada, geokodifikatu
   let koord = getLekuarenKoordenatuak(lekua);
-  console.log(koord);
   if (koord != undefined) {
     // Marker sortu
     let marker = L.marker([koord.lat, koord.lng], {
@@ -201,7 +200,7 @@ function lerroaIrudikatu() {
 // Web scrapper simulatu
 async function test(from: string, to: string) {
   function sleep(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise(resolve => tmp = setTimeout(resolve, ms));
   }
 
   await sleep(2000);
@@ -215,7 +214,7 @@ async function test(from: string, to: string) {
       denbora: {
         hasiera: '13:57',
         amaiera: '20:10',
-        iraupena: '00:50:00'
+        iraupena: '00:00:50'
       },
       ibilbideak: [
         {
@@ -297,8 +296,8 @@ async function test(from: string, to: string) {
       },
       denbora: {
         hasiera: '13:57',
-        amaiera: '20:10',
-        iraupena: '00:20:00'
+        amaiera: '19:10',
+        iraupena: '00:03:20'
       },
       ibilbideak: [
         {
@@ -330,6 +329,20 @@ async function test(from: string, to: string) {
           }
         }
       ]
+    },
+    {
+      id: 3,
+      kokapenak: {
+        hasiera: from,
+        helmuga: to
+      },
+      denbora: {
+        hasiera: '13:57',
+        amaiera: '20:50',
+        iraupena: '00:02:20'
+      },
+      ibilbideak: [
+      ]
     }
   ]
 }
@@ -337,21 +350,31 @@ async function test(from: string, to: string) {
 //#region Components
 function AukerenZerrenda(props: any) {
   const [aukeraData, setAukeraData] = useState<Aukera[]>([]);
-  const [ordenazioa, setOrdenazioa] = useState<ordenMota>();
+  
   useEffect(() => {
     // Unai sortutako funtzioarekin aldatu
     test(props.hasiera, props.helmuga).then(aukerak => {
-      if (ordenMota.azkarragoa === ordenazioa) {
-        aukerak.sort(aukeraKonparatuIraupena);
-      } else if (ordenMota.lehenaAilegatzeko === ordenazioa) {
-        aukerak.sort(aukeraKonparatuAmaiera);
-      }
-
-      aukerak.sort(aukeraKonparatuIraupena);
-      
       setAukeraData(aukerak);
     })
-  })
+  }, []);
+
+  function aukerakOrdenatu() {
+    let tmp: Aukera[] = aukeraData.map(x => x);
+    if (tmp.length > 1) {
+      if (ordenMota.azkarragoa === props.ordenazioa) {
+        console.log(tmp)
+        setAukeraData(tmp.sort(aukeraKonparatuIraupena));
+        console.log(tmp)
+        console.log(aukeraData)
+      } else if (ordenMota.lehenaAilegatzeko === props.ordenazioa) {
+        setAukeraData(tmp.sort(aukeraKonparatuAmaiera));
+      }
+    }
+  }
+
+  useEffect(() => {
+    aukerakOrdenatu();
+  }, [props.ordenazioa])
 
   return  <IonContent>
             <IonList id="zerrenda">
@@ -359,7 +382,7 @@ function AukerenZerrenda(props: any) {
                 aukeraData.map(item => (
                   <IonCard button onClick={() => aukeraIrudikatu(item)} key={item.id}>
                     <IonCardHeader>
-                      <IonCardTitle>{item.denbora.hasiera} - {item.denbora.amaiera} ({item.denbora.iraupena})</IonCardTitle>
+                      <IonCardTitle>{item.denbora.hasiera} - {item.denbora.amaiera} ({moment(item.denbora.iraupena, 'dd:hh:mm').format('HH[h] mm[min]')})</IonCardTitle>
                       <IonCardSubtitle>{item.ibilbideak.length} garraiobide</IonCardSubtitle>
                     </IonCardHeader>
                     <IonCardContent>
@@ -456,15 +479,26 @@ function Informazioa(props: any) {
 
 function Zutabea(props: any) {
   const [details, setDetails] = useState(false);
+  const [ordenazioa, setOrdenazioa] = useState<ordenMota>();
 
   return  <IonContent className="without-scrollbar">
             <IonHeader>
               <h1>
                 {props.hasiera}-tik {props.helmuga}-ra
-              </h1>
+              </h1><br/>
+              <IonRadioGroup value={ordenazioa} onIonChange={(e) => setOrdenazioa(e.detail.value)}>
+                <IonLabel>
+                  <IonRadio value={ordenMota.lehenaAilegatzeko}/>
+                  Lehena
+                </IonLabel>
+                <IonLabel>
+                <IonRadio value={ordenMota.azkarragoa}/>
+                Azkarragoa
+                </IonLabel>
+              </IonRadioGroup>
             </IonHeader>
             <IonContent hidden={details}>
-              <AukerenZerrenda setDetails={setDetails} hasiera={props.hasiera} helmuga={props.helmuga}/>
+              <AukerenZerrenda setDetails={setDetails} hasiera={props.hasiera} helmuga={props.helmuga} ordenazioa={ordenazioa}/>
             </IonContent>
             <IonContent hidden={!details}>
               <Informazioa setDetails={setDetails}/>
@@ -477,7 +511,6 @@ const Emaitza: React.FC = () => {
 
   const darkModeEnabled = document.body.classList.contains('dark');
   const toggleDarkModeHandler = (ev: CustomEvent<ToggleChangeEventDetail<any>>) => {
-    console.log(ev.detail.checked);
     document.body.classList.toggle("dark", ev.detail.checked);
   };
   
