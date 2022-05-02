@@ -5,7 +5,7 @@
 /.pnp
 .pnp.js
 
-# testing
+ testing
 /coverage
 
 # production
@@ -157,3 +157,4 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+data.json

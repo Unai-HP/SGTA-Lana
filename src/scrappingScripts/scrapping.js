@@ -14,8 +14,7 @@ class Scraper {
 
         var html_dictionary = await this.puppet.getPreferenceDirectionsAllHtml(url)
         for (const [key, value] of Object.entries(html_dictionary)) {
-            var basic_garraio_multzoa = this.getBasicDirections(value);
-            basic_garraio_multzoa.push({pref: key});
+            var basic_garraio_multzoa = this.getBasicDirections(value, key);
             directions.push(basic_garraio_multzoa);
         }
         
@@ -26,21 +25,21 @@ class Scraper {
         return directions;
     }
 
-    getBasicDirections(html) {
+    getBasicDirections(html, pref = '') {
         console.log("Getting basic directions...");
 
         let directions = [];
         let $ = cheerio.load(html);
 
         $("div[id^='section-directions-trip']").each((i, elem) => {
-            var basic_garraioa = this.extractBasicData(i, $(elem))
+            var basic_garraioa = this.extractBasicData(i, $(elem), pref)
             directions.push(basic_garraioa);
         });
 
         return directions;
     }
 
-    extractBasicData (i, elem, full_html) {
+    extractBasicData (i, elem, pref = '') {
         const id = i;
 
         // ^ erabiltzen da css_selector-ean regex erabiltzeko. 
@@ -61,6 +60,7 @@ class Scraper {
         // return a json with the data
         const data = {
                 id: id,
+                pref: pref,
                 denbora: denbora,
                 details: details_selector
         }
@@ -68,30 +68,27 @@ class Scraper {
     }
 
     async getDetailedDirections (json) {
-        if (true) {
-            console.log("Getting detailed directions...");
-            for (let garraio_multz = 0; garraio_multz < json.length; garraio_multz++) {
-                const pref = json[garraio_multz].pref;
-                console.log("Where 1");
-                await this.puppet.openPreference(pref);
-                console.log("Where 2");
-                for (let garraio = 0; garraio < json[garraio_multz].length; garraio++) {
-                    json[garraio_multz][garraio].details = await this.getGarraioaDetails(json[garraio_multz][garraio]);
-                }
-                console.log("Where 3");
-                await this.puppet.closePreference();
-            }
-        } else {
-            for (let i = 0; i < json.length; i++) {
-                json[i].details = await this.getGarraioaDetails(json[i]);
-            }
-        }
-        
-        json = this.fillDirectiontransshipment(json);
+        console.log("Getting detailed directions...");
+        for (let garraio_multz = 0; garraio_multz < json.length; garraio_multz++) {
+            const pref = json[garraio_multz][0]["pref"];
+            console.log("Getting detailed directions for " + pref);
 
-        // save json file 
-        const fs = require('fs');
-        fs.writeFileSync('data.json', JSON.stringify(json, null, 2));
+            await this.puppet.openPreference(pref);
+            for (let garraio = 0; garraio < json[garraio_multz].length; garraio++) {
+                json[garraio_multz][garraio].details = await this.getGarraioaDetails(json[garraio_multz][garraio]);
+            }
+            await this.puppet.openPreference(pref);
+        
+            // Wait for 2 seconds
+            await Promise.delay(2000);
+
+            await this.puppet.page.click(".OcYctc > span:nth-child(2)");
+
+            // save json file
+            const fs = require('fs');
+            fs.writeFileSync('data.json', JSON.stringify(json, null, 2));
+        }
+        json = this.fillDirectiontransshipment(json);
 
         return json;
     }
@@ -170,16 +167,6 @@ class Scraper {
                     }
                 }
             }
-        } else {
-            for (let garraioa = 0; garraioa < json.length; garraioa++) {
-                // etapak lortu
-                for (let etapa = 0; etapa < json[garraioa].details.etapak.length; etapa++) {
-                    // eta etaparen amaiera hurrengoaren hasiera bihurtu, hau hutsa bada.
-                    if (json[garraioa].details.etapak[etapa].amaiera === "") {
-                        json[garraioa].details.etapak[etapa].amaiera = json[garraioa].details.etapak[etapa + 1].hasiera;;
-                    }
-                }
-            }
         }
         
 
@@ -200,9 +187,15 @@ class Scraper {
 const scraper = new Scraper();
 var data = [];
 data = scraper.getBasicData("https://www.google.com/maps/dir/?api=1&origin=Madrid&destination=Paris&travelmode=transit")
+// .then(data => {
+//     console.log(data);
+// }).then(() => {
+//     scraper.finish();
+// });
 Promise.all(data).then(function(values) {
     //console.log(JSON.stringify(values, null, 2));
-    scraper.getDetailedDirections(values);
-    scraper.finish();
+    scraper.getDetailedDirections(values).then(function(values) {
+        scraper.finish();
+    });
 });
 
