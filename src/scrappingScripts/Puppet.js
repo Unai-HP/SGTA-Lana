@@ -4,7 +4,7 @@ const fs = require('fs').promises;
 class Puppet {
     browser
     page
-    headless = true
+    headless = false
 
     constructor() {
         this.browser = null;
@@ -17,16 +17,18 @@ class Puppet {
     }
 
     async getDirectionDetailsHtml(selector) {
-
-
-        console.log('\tGetting details for: ' + selector);
+        console.log('\tGetting details html for: ' + selector);
         const backSelector = ".ysKsp";
 
-        await this.page.waitForSelector(selector)
+        // wait for the panel to load
+        await this.page.waitForSelector(".miFGmb", { timeout: 100000 })
+
+        await this.page.waitForSelector(selector, { timeout: 100000 })
         await this.page.click(selector)
+
         // Lehenengo aldian bakarrik click bat egin behar da, baina hurrengoak 2
         try {
-            await this.page.waitForSelector(selector)
+            await this.page.waitForSelector(selector, { timeout: 100000 })
             await this.page.click(selector)
         } catch (error) {
             console.log("\t\tFirst datails click.")
@@ -34,17 +36,14 @@ class Puppet {
 
         console.log("\t\tTrip details clicked.")
 
-        // wait for 1 second
-        await this.page.waitForTimeout(3000);
+        await this.page.waitForSelector(".M3pmwc", { timeout: 100000 })
 
         // Get html
         const html = await this.page.content();
 
-        // wait for 2 seconds
-        await this.page.waitForTimeout(2000);
 
-        await this.page.waitForSelector('.szK3Wb')
-        await this.page.waitForSelector(backSelector)
+        await this.page.waitForSelector('.szK3Wb', { timeout: 100000 })
+        await this.page.waitForSelector(backSelector, { timeout: 100000 })
         await this.page.click(backSelector)
 
         console.log("\t\tTrip details closed.")
@@ -81,8 +80,6 @@ class Puppet {
     }
 
     async getPreferencedDirectionsByTypeHtml(pref, url = '') {
-        // wait for 2 seconds
-        await this.page.waitForTimeout(2000);
 
         let html = '';
         if (url !== '') {
@@ -92,12 +89,11 @@ class Puppet {
         await this.openPreference(pref);
 
         // wait for 2 seconds
-        await this.page.waitForTimeout(2000);
-        await this.page.waitForSelector(".m6QErb:nth-child(4)")
-        .then(async () => {
-            html = await this.page.content();
-            console.log("\t\t" + pref + " preferences closed.");
-        })
+        //await this.page.waitForTimeout(2000);
+
+        await this.page.waitForSelector(".etbuEf")
+
+        html = await this.page.content();
         
         await this.closePreferences();
 
@@ -110,15 +106,15 @@ class Puppet {
     }
 
     async openPreference(pref) {
-        console.log("\t-> Opening preferences. Preference: " + pref)
-        const opt_selector = ".OcYctc > span:nth-child(1)"
+        console.log("-> Preference: " + pref)
+        console.log("\tOpening preference.")
+        const opt_selector = "button.OcYctc"
         const bus_selector = "#transit-vehicle-prefer-0"
         const train_selector = "#transit-vehicle-prefer-2"
         const tram_selector = "#transit-vehicle-prefer-3"
         const subway_selector = "#transit-vehicle-prefer-1"
 
-        // wait for 2 seconds
-        await this.page.waitForTimeout(2000);
+        await this.page.waitForSelector("div.MlqQ3d:nth-child(2)")
 
         await this.page.waitForSelector(opt_selector)
         await this.page.click(opt_selector)
@@ -141,13 +137,10 @@ class Puppet {
                 await this.page.click(subway_selector)
                 break;
         }
-
-        // wait for 2 seconds
-        await this.page.waitForTimeout(2000);
     }
 
     async closePreferences() {  
-        console.log("\t-> Closing preferences. Starting...")      
+        console.log("\tClosing preferences. Starting...")      
         const bus_selector = "#transit-vehicle-prefer-0"
         const train_selector = "#transit-vehicle-prefer-2"
         const tram_selector = "#transit-vehicle-prefer-3"
@@ -159,7 +152,7 @@ class Puppet {
         try {
             await this.page.click(opt_selector)
         } catch (error) {
-            console.log("\t\tPreferentziak berriro irekiak.")
+            console.log("\tPreferentziak berriro irekiak.")
         }
         
 
@@ -187,18 +180,11 @@ class Puppet {
             await this.page.click(subway_selector)
         }
 
-        console.log("\t\tClosing preferences...")
-
         // close preferences
         await this.page.waitForSelector(close_selector)
         await this.page.click(close_selector)
-        
-        await this.page.goBack();
 
-        // wait for 2 seconds
-        await this.page.waitForTimeout(2000);
-
-        console.log("\t\tPreferences closed.")
+        console.log("\tPreferences closed.")
     }
 
     async close() {
@@ -206,7 +192,3 @@ class Puppet {
     }
 }
 exports.Puppet = Puppet;
-// const puppet = new Puppet();
-// puppet.getPreferenceBusHtml("https://www.google.com/maps/dir/?api=1&origin=Zalla&destination=Bilbao&travelmode=transit").then(
-// //() => puppet.getDirectionDetailsHtml("#section-directions-trip-title-3")
-// )
