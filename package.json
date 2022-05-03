@@ -28,6 +28,7 @@
     "https": "^1.0.0",
     "ionicons": "^5.5.4",
     "leaflet": "^1.8.0",
+    "mathjs": "^10.5.1",
     "moment": "^2.29.3",
     "net": "^1.0.2",
     "node-polyfill-webpack-plugin": "^1.1.4",

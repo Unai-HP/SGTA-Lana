@@ -1,7 +1,7 @@
 const cheerio = require("cheerio");
 const { Puppet } = require("./Puppet");
 const moment = require("moment");
-const Promise = require("bluebird");
+const Math = require("mathjs");
 
 class Scraper {
     constructor() {
@@ -15,7 +15,9 @@ class Scraper {
         var html_dictionary = await this.puppet.getPreferenceDirectionsAllHtml(url)
         for (const [key, value] of Object.entries(html_dictionary)) {
             var basic_garraio_multzoa = this.getBasicDirections(value, key);
-            directions.push(basic_garraio_multzoa);
+            for (let garraioa = 0; garraioa < basic_garraio_multzoa.length; garraioa++) {
+                directions.push(basic_garraio_multzoa[garraioa]);
+            }
         }
         
         // save json file
@@ -59,7 +61,7 @@ class Scraper {
 
         // return a json with the data
         const data = {
-                id: id,
+                id: Math.random().toString(16).slice(2),
                 pref: pref,
                 denbora: denbora,
                 details: details_selector
@@ -69,25 +71,33 @@ class Scraper {
 
     async getDetailedDirections (json) {
         console.log("Getting detailed directions...");
-        for (let garraio_multz = 0; garraio_multz < json.length; garraio_multz++) {
-            const pref = json[garraio_multz][0]["pref"];
-            console.log("Getting detailed directions for " + pref);
 
-            await this.puppet.openPreference(pref);
-            for (let garraio = 0; garraio < json[garraio_multz].length; garraio++) {
-                json[garraio_multz][garraio].details = await this.getGarraioaDetails(json[garraio_multz][garraio]);
+        // Preferntzia mota guztiak lortu
+        const preferences = [];
+        json.forEach(element => {
+            if (!preferences.includes(element['pref'])) {
+                preferences.push(element['pref']);
             }
+        });
+
+        // Preferentzia bakoitzetik menua ireki eta hauek prozesatu
+        for (let pref = 0; pref < preferences.length; pref++) {
+            const preferentzia = preferences[pref];
+            
+            await this.puppet.openPreference(preferentzia);
+
+            for (let garraioa = 0; garraioa < json.length; garraioa++) {
+                if (json[garraioa]["pref"] === preferentzia) {
+                    json[garraioa].details = await this.getGarraioaDetails(json[garraioa]);
+                }
+            }
+
             await this.puppet.openPreference(pref);
-        
-            // Wait for 2 seconds
-            await Promise.delay(2000);
-
+            // wait for 2 seconds
+            await this.puppet.page.waitForTimeout(2000);
             await this.puppet.page.click(".OcYctc > span:nth-child(2)");
-
-            // save json file
-            const fs = require('fs');
-            fs.writeFileSync('data.json', JSON.stringify(json, null, 2));
         }
+
         json = this.fillDirectiontransshipment(json);
 
         return json;
@@ -171,11 +181,6 @@ class Scraper {
         
 
         return json;
-
-        // Bidaia bakoitzako
-        function bidaiakFill() {
-            
-        }
     }
 
     // Itxi puppeteer
@@ -185,17 +190,20 @@ class Scraper {
 }
 
 const scraper = new Scraper();
-var data = [];
-data = scraper.getBasicData("https://www.google.com/maps/dir/?api=1&origin=Madrid&destination=Paris&travelmode=transit")
-// .then(data => {
-//     console.log(data);
-// }).then(() => {
-//     scraper.finish();
-// });
-Promise.all(data).then(function(values) {
-    //console.log(JSON.stringify(values, null, 2));
-    scraper.getDetailedDirections(values).then(function(values) {
-        scraper.finish();
-    });
+var informazioa = null;
+//const fs = require('fs');
+//data = JSON.parse(fs.readFileSync('data.json', 'utf8'));
+scraper.getBasicData("https://www.google.com/maps/dir/?api=1&origin=Madrid&destination=Paris&travelmode=transit").then(data => {
+    informazioa = data;
+    console.log(informazioa);
+    scraper.finish();
 });
+// .then(data => {
+//     scraper.getDetailedDirections(data).then(function(values) {
+//         // save file 
+//         fs.writeFileSync('data.json', JSON.stringify(values, null, 2));
+//         scraper.finish();
+//     });
+// })
+
 

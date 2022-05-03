@@ -1,4 +1,3 @@
-const { unwatchFile } = require("fs");
 const puppeteer = require("puppeteer");
 const fs = require('fs').promises;
 
@@ -18,6 +17,8 @@ class Puppet {
     }
 
     async getDirectionDetailsHtml(selector) {
+
+
         console.log('\tGetting details for: ' + selector);
         const backSelector = ".ysKsp";
 
@@ -33,17 +34,16 @@ class Puppet {
 
         console.log("\t\tTrip details clicked.")
 
-        await this.page.waitForNavigation({
-            waitUntil: 'networkidle2',
-        });
         // wait for 1 second
-        await this.page.waitForTimeout(1000);
+        await this.page.waitForTimeout(3000);
 
         // Get html
         const html = await this.page.content();
 
         // wait for 2 seconds
         await this.page.waitForTimeout(2000);
+
+        await this.page.waitForSelector('.szK3Wb')
         await this.page.waitForSelector(backSelector)
         await this.page.click(backSelector)
 
@@ -89,7 +89,6 @@ class Puppet {
             await this.openGoogleMaps(url);
         }
 
-        console.log("\t\tOpening preferences. Type: " + pref)
         await this.openPreference(pref);
 
         // wait for 2 seconds
@@ -111,23 +110,21 @@ class Puppet {
     }
 
     async openPreference(pref) {
-        console.log("\t\tOpening preferences. Preference: " + pref)
+        console.log("\t-> Opening preferences. Preference: " + pref)
         const opt_selector = ".OcYctc > span:nth-child(1)"
         const bus_selector = "#transit-vehicle-prefer-0"
         const train_selector = "#transit-vehicle-prefer-2"
         const tram_selector = "#transit-vehicle-prefer-3"
         const subway_selector = "#transit-vehicle-prefer-1"
 
-        this.page.waitForNavigation({
-            waitUntil: 'networkidle2',
-        });
+        // wait for 2 seconds
+        await this.page.waitForTimeout(2000);
 
         await this.page.waitForSelector(opt_selector)
         await this.page.click(opt_selector)
 
         switch (pref) {
             case 'Bus':
-                console.log("\t\t\tOpening Bus preferences.")
                 await this.page.waitForSelector(bus_selector)
                 await this.page.click(bus_selector) 
                 break;
@@ -150,7 +147,7 @@ class Puppet {
     }
 
     async closePreferences() {  
-        console.log("\t\tClosing preferences.")      
+        console.log("\t-> Closing preferences. Starting...")      
         const bus_selector = "#transit-vehicle-prefer-0"
         const train_selector = "#transit-vehicle-prefer-2"
         const tram_selector = "#transit-vehicle-prefer-3"
@@ -190,6 +187,8 @@ class Puppet {
             await this.page.click(subway_selector)
         }
 
+        console.log("\t\tClosing preferences...")
+
         // close preferences
         await this.page.waitForSelector(close_selector)
         await this.page.click(close_selector)
@@ -198,6 +197,8 @@ class Puppet {
 
         // wait for 2 seconds
         await this.page.waitForTimeout(2000);
+
+        console.log("\t\tPreferences closed.")
     }
 
     async close() {
