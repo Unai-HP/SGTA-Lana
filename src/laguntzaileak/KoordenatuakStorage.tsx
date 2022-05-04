@@ -1,4 +1,5 @@
 import { Lekua, Koordenatuak } from '../models/models';
+import { lekuak } from './zuzenketak';
 
 export function getLekuarenKoordenatuak(lekua: string): Koordenatuak | undefined {
   let result: Koordenatuak | undefined = undefined;
@@ -24,6 +25,6 @@ export function setLekuarenKoordenatuak(lekua: string, koordenatuak: Koordenatua
 }
 function checkLocalStorage() {
   if (!localStorage.getItem('lekuak')) {
-    localStorage.setItem('lekuak', JSON.stringify([]));
+    localStorage.setItem('lekuak', JSON.stringify(lekuak));
   }
 }

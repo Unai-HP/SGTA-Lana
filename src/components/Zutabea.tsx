@@ -15,12 +15,14 @@ export function Zutabea(props: any) {
         {props.hasiera}-tik {props.helmuga}-ra
       </h1><br />
       <IonRadioGroup value={ordenazioa} onIonChange={(e) => setOrdenazioa(e.detail.value)}>
+        <IonLabel>Ordenazioa:</IonLabel><br/>
         <IonLabel>
-          <IonRadio value={ordenMota.lehenaAilegatzeko} />
+          <IonRadio value={ordenMota.lehenaAilegatzeko}/>
           Lehena
         </IonLabel>
+        &nbsp;
         <IonLabel>
-          <IonRadio value={ordenMota.azkarragoa} />
+          <IonRadio value={ordenMota.azkarragoa}/>
           Azkarragoa
         </IonLabel>
       </IonRadioGroup>

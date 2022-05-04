@@ -40,14 +40,14 @@ export function Informazioa(props: any) {
             </IonButtons>
           </IonToolbar>
         </IonHeader>
-        {(props.selectedAukera != undefined && 'ibilbideak' in props.selectedAukera) && props.selectedAukera.ibilbideak.map((ib: Ibilbidea) => (
+        {(props.selectedAukera != undefined && 'ibilbideak' in props.selectedAukera.xehetasunak) && props.selectedAukera.xehetasunak.ibilbideak.map((ib: Ibilbidea) => (
           <IonCard key={ib.id}>
             <IonCardHeader>
               <IonTitle><IonThumbnail><IonImg src={mota2icon(ib.mota)} /></IonThumbnail> {ib.izena} {ib.helmuga}</IonTitle>
             </IonCardHeader>
             <IonCardContent>
               {ib.kokapenak.hasiera} <IonIcon icon={arrowForward} /> {ib.kokapenak.amaiera}<br />
-              {ib.denbora.hasiera} - {ib.denbora.amaiera} ({ib.denbora.iraupena})
+              {ib.denbora.hasiera} - {ib.denbora.amaiera}
             </IonCardContent>
           </IonCard>
         ))}
