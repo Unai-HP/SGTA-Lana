@@ -1,6 +1,6 @@
 import { IonContent, IonHeader, IonLabel, IonRadioGroup, IonRadio } from '@ionic/react';
 import { useState } from 'react';
-import { Aukera, ordenMota } from '../models/aukera';
+import { Aukera, ordenMota } from '../models/models';
 import { AukerenZerrenda } from './AukerenZerrenda';
 import { Informazioa } from './Informazioa';
 

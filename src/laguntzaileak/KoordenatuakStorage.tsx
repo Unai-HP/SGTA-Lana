@@ -1,4 +1,4 @@
-import { Lekua, Koordenatuak } from '../models/aukera';
+import { Lekua, Koordenatuak } from '../models/models';
 
 export function getLekuarenKoordenatuak(lekua: string): Koordenatuak | undefined {
   let result: Koordenatuak | undefined = undefined;

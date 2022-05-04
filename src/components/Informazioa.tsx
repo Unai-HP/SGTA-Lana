@@ -4,7 +4,7 @@ import trenIconSvg from '../img/tren.svg';
 import metroIconSvg from '../img/metro.svg';
 import tranviaIconSvg from '../img/tranvia.svg';
 import oinezIconSvg from '../img/oinez.svg';
-import { IbilbideMota, Ibilbidea } from '../models/aukera';
+import { IbilbideMota, Ibilbidea } from '../models/models';
 import { arrowBack, arrowForward } from "ionicons/icons";
 
 export function Informazioa(props: any) {

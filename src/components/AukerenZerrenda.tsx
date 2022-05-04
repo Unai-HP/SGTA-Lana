@@ -1,9 +1,10 @@
 import { IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonList, IonButton, IonCardContent, IonSkeletonText } from '@ionic/react';
 import { useEffect, useState } from 'react';
-import { Aukera, ordenMota, aukeraKonparatuIraupena, aukeraKonparatuAmaiera } from '../models/aukera';
+import { Aukera, ordenMota } from '../models/models';
 import moment from 'moment';
 import { test } from '../pages/Emaitza';
 import { aukeraIrudikatu } from "../laguntzaileak/Mapa";
+import { aukeraKonparatuAmaiera, aukeraKonparatuIraupena } from '../laguntzaileak/AukeraKonparazioak';
 
 //#region Components
 export function AukerenZerrenda(props: any) {
@@ -41,11 +42,11 @@ export function AukerenZerrenda(props: any) {
           <IonCard button onClick={() => aukeraIrudikatu(item)} key={item.id}>
             <IonCardHeader>
               <IonCardTitle>{item.denbora.hasiera} - {item.denbora.amaiera} ({moment(item.denbora.iraupena, 'dd:hh:mm').format('HH[h] mm[min]')})</IonCardTitle>
-              <IonCardSubtitle>{item.ibilbideak.length} garraiobide</IonCardSubtitle>
+              <IonCardSubtitle>{item.xehetasunak.ibilbideak.length} garraiobide</IonCardSubtitle>
             </IonCardHeader>
             <IonCardContent>
               <IonButton onClick={() => { props.setDetails(true); props.setSelectedAukera(item); }}>
-                Details
+                Xehetasunak
               </IonButton>
             </IonCardContent>
           </IonCard>

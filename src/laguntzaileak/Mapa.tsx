@@ -2,7 +2,7 @@ import * as L from 'leaflet';
 import startIconSvg from '../img/start.svg';
 import transferIconSvg from '../img/transfer.svg';
 import endtIconSvg from '../img/end.svg';
-import { Aukera } from '../models/aukera';
+import { Aukera } from '../models/models';
 import { NominatimResponse } from 'nominatim-browser';
 import { getLekuarenKoordenatuak, setLekuarenKoordenatuak } from "./KoordenatuakStorage";
 
@@ -35,10 +35,10 @@ export function aukeraIrudikatu(aukera: Aukera) {
   markerGuztiakEzabatu();
 
   // Aukeraren garraiobide guztiak zeharkatu
-  for (let i = 0; i < aukera.ibilbideak.length; i++) {
-    markerSortu(aukera.ibilbideak[i].kokapenak.hasiera, i, (i === 0) ? startIcon : transferIcon);
-    if (i == aukera.ibilbideak.length - 1) {
-      markerSortu(aukera.ibilbideak[i].kokapenak.amaiera, i + 1, endIcon);
+  for (let i = 0; i < aukera.xehetasunak.ibilbideak.length; i++) {
+    markerSortu(aukera.xehetasunak.ibilbideak[i].kokapenak.hasiera, i, (i === 0) ? startIcon : transferIcon);
+    if (i == aukera.xehetasunak.ibilbideak.length - 1) {
+      markerSortu(aukera.xehetasunak.ibilbideak[i].kokapenak.amaiera, i + 1, endIcon);
     }
   }
 }
