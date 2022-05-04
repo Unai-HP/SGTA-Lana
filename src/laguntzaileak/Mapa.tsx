@@ -5,6 +5,7 @@ import endtIconSvg from '../img/end.svg';
 import { Aukera } from '../models/models';
 import { NominatimResponse } from 'nominatim-browser';
 import { getLekuarenKoordenatuak, setLekuarenKoordenatuak } from "./KoordenatuakStorage";
+import $ from "jquery";
 
 //#endregion
 //#region MaparenIrudikapena
@@ -32,6 +33,20 @@ const endIcon: L.Icon = L.icon({
 let lerroa: L.Polyline;
 
 export function aukeraIrudikatu(aukera: Aukera) {
+  var xhr = new XMLHttpRequest();
+  $.ajax({
+    url: 'https://cors-anywhere.herokuapp.com/https://www.google.com/maps/search/Bilbao',
+    type: 'get',
+    xhr: function() {
+        return xhr;
+    },
+    success: function() {
+        let erantzuna = xhr.responseText;
+        let content = erantzuna.match('') //<meta content="https:\/\/maps\.google\.com\/maps\/api\/staticmap\?(center=.*)&amp;zoom=.*
+
+    },
+    async: false
+  });
   markerGuztiakEzabatu();
 
   // Aukeraren garraiobide guztiak zeharkatu
@@ -39,6 +54,8 @@ export function aukeraIrudikatu(aukera: Aukera) {
     markerSortu(aukera.xehetasunak.ibilbideak[i].kokapenak.hasiera, i, (i === 0) ? startIcon : transferIcon);
     if (i == aukera.xehetasunak.ibilbideak.length - 1) {
       markerSortu(aukera.xehetasunak.ibilbideak[i].kokapenak.amaiera, i + 1, endIcon);
+    } else {
+      markerSortu(aukera.xehetasunak.ibilbideak[i].kokapenak.amaiera, i + 1, transferIcon);
     }
   }
 }
@@ -77,7 +94,8 @@ function markerSortu(lekua: string, index: Number, markerIcon: L.Icon) {
       });
   }
 }
-function markerGehitu(marker: L.Marker) {
+
+export function markerGehitu(marker: L.Marker) {
   markerList.push(marker); // Marker guztien zerrendara gehitu
   map.addLayer(marker); // Mapan sartu
 

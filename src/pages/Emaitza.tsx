@@ -2,8 +2,8 @@ import { IonBackButton, IonButtons, IonCol, IonContent, IonGrid, IonHeader, IonI
 import * as L from 'leaflet';
 import { useEffect } from 'react';
 import { useParams } from 'react-router';
-import { IbilbideMota} from '../models/models';
-import { moon } from "ionicons/icons";
+import { Aukera, IbilbideMota} from '../models/models';
+import { bus, moon } from "ionicons/icons";
 import './Emaitza.css';
 import 'leaflet/dist/leaflet.css';
 import { Zutabea } from '../components/Zutabea';
@@ -17,8 +17,130 @@ export async function test(from: string, to: string) {
 
   await sleep(2000);
   return [
-    
-  ]
+    {
+      id: 1,
+      denbora: {
+        hasiera: '9:52',
+        amaiera: '12:16',
+        iraupena: '00:02:24'
+      },
+      xehetasunak: {
+        informazioa: '9:52 desde Lusa(1207)',
+        ibilbideak: [
+          {
+            id: 0,
+            izena: 'A0651',
+            helmuga: 'Bilbao',
+            mota: 0,
+            kokapenak: {
+              hasiera: 'Lusa (1207)',
+              amaiera: 'Bilbao Intermodal'
+            },
+            denbora: {
+              hasiera: '9:52',
+              amaiera: '10:35',
+            }
+          },
+          {
+            id: 1,
+            izena: 'DO01',
+            helmuga: 'Iñurritza',
+            mota: 0,
+            kokapenak: {
+              hasiera: 'Bilboko Autobus Geltokia',
+              amaiera: 'Donostiako Autobus Geltokia'
+            },
+            denbora: {
+              hasiera: '11:00',
+              amaiera: '12:16',
+            }
+          }
+        ]
+      }
+    },
+    {
+      id: 2,
+      denbora: {
+        hasiera: '9:52',
+        amaiera: '12:26',
+        iraupena: '00:02:34'
+      },
+      xehetasunak: {
+        informazioa: '9:52 desde Lusa(1207)',
+        ibilbideak: [
+          {
+            id: 0,
+            izena: 'A0651',
+            helmuga: 'Bilbao',
+            mota: 0,
+            kokapenak: {
+              hasiera: 'Lusa (1207)',
+              amaiera: 'Bilbao Intermodal'
+            },
+            denbora: {
+              hasiera: '9:52',
+              amaiera: '10:35',
+            }
+          },
+          {
+            id: 1,
+            izena: 'ALSA',
+            helmuga: 'Irun',
+            mota: 0,
+            kokapenak: {
+              hasiera: 'Bilboko Autobus Geltokia',
+              amaiera: 'Estación de Autobuses de San Sebastian'
+            },
+            denbora: {
+              hasiera: '11:00',
+              amaiera: '12:20',
+            }
+          }
+        ]
+      }
+    },
+    {
+      id: 3,
+      denbora: {
+        hasiera: '9:36',
+        amaiera: '12:16',
+        iraupena: '00:02:40'
+      },
+      xehetasunak: {
+        informazioa: '9:36 desde Zalla',
+        ibilbideak: [
+          {
+            id: 0,
+            izena: 'Bilbao-Balmaseda',
+            helmuga: 'Bilbao',
+            mota: 1,
+            kokapenak: {
+              hasiera: 'Zalla',
+              amaiera: 'Basurto'
+            },
+            denbora: {
+              hasiera: '9:36',
+              amaiera: '10:20',
+            }
+          },
+          {
+            id: 1,
+            izena: 'DO01',
+            helmuga: 'Irun',
+            mota: 0,
+            kokapenak: {
+              hasiera: 'Bilboko Autobus Geltokia',
+              amaiera: 'Donostiako Autobus Geltokia'
+            },
+            denbora: {
+              hasiera: '11:00',
+              amaiera: '12:16',
+            }
+          }
+        ]
+      }
+    }
+  ] as Aukera[]
 }
 
 const Emaitza: React.FC = () => {
