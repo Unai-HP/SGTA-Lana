@@ -1,18 +1,21 @@
 const cheerio = require("cheerio");
-const { Puppet } = require("./Puppet");
+const { Puppet } = require("./puppeting");
 const moment = require("moment");
 const Math = require("mathjs");
 
-class Scraper {
+class Manipulator {
     constructor() {
         this.puppet = new Puppet();
     }
+
+    //---------------------------------------------------------------------------------------------------------------------
+    // Data getters
 
     async getBasicData(url) {
         console.log("Getting basic data...");
         let directions = [];
 
-        var html_dictionary = await this.puppet.getPreferenceDirectionsAllHtml(url)
+        var html_dictionary = await this.puppet.getAllPreferenceDirections(url)
         for (const [key, value] of Object.entries(html_dictionary)) {
             var basic_garraio_multzoa = this.getBasicDirections(value, key);
             for (let garraioa = 0; garraioa < basic_garraio_multzoa.length; garraioa++) {
@@ -27,6 +30,40 @@ class Scraper {
         directions = this.removeDuplicates(directions);
         return directions;
     }
+
+    async getDetailedDirections (json) {
+        console.log("Getting detailed directions...");
+
+        // Preferntzia mota guztiak lortu
+        const preferences = [];
+        json.forEach(element => {
+            if (!preferences.includes(element['pref'])) {
+                preferences.push(element['pref']);
+            }
+        });
+
+        // Preferentzia bakoitzetik menua ireki eta hauek prozesatu
+        for (let pref = 0; pref < preferences.length; pref++) {
+            const preferentzia = preferences[pref];
+            
+            await this.puppet.openPreference(preferentzia);
+
+            for (let garraioa = 0; garraioa < json.length; garraioa++) {
+                if (json[garraioa]["pref"] === preferentzia) {
+                    json[garraioa].xehetasunak = await this.getGarraioaDetails(json[garraioa]);
+                }
+            }
+
+            await this.puppet.closePreferences();
+        }
+
+        json = this.fillDirectiontransshipment(json);
+        json = this.removeDuplicates(json);
+        return json;
+    }
+
+    //---------------------------------------------------------------------------------------------------------------------
+    // Scrapping methods
 
     getBasicDirections(html, pref = '') {
         console.log("Extracting basic directions...");
@@ -50,20 +87,20 @@ class Scraper {
         // ^ erabiltzen da css_selector-ean regex erabiltzeko. 
         const denbora = {
             hasiera: $("h1[id^='section-directions-trip-title-'] > span:nth-child(2) > span:nth-child(1)").text(),
-            bukaera: $("h1[id^='section-directions-trip-title-'] > span:nth-child(2) > span:nth-child(2)").text(),
+            amaiera: $("h1[id^='section-directions-trip-title-'] > span:nth-child(2) > span:nth-child(2)").text(),
             iraupena: $("div[class='Fk3sm fontHeadlineSmall']").text(),
         }
 
         // Denborari formatua aldatu
         denbora.hasiera = moment(denbora.hasiera, "HH:mm a").format("HH:mm");
-        denbora.bukaera = moment(denbora.bukaera, "HH:mm a").format("HH:mm");
+        denbora.amaiera = moment(denbora.amaiera, "HH:mm a").format("HH:mm");
         // lortu desberdintazuna minututan
         denbora.iraupena = $("div[class='Fk3sm fontHeadlineSmall']").text();
 
-        let iterezaioak = [];
+        let iterazioak = [];
         $("div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > span").each((i, elem) => {
             if (i % 2 === 0) {
-                iterezaioak.push({
+                iterazioak.push({
                     img: $(elem).find("span:nth-child(1) > img:nth-child(1)").attr("alt"), 
                     text: $(elem).find("span:nth-child(2) > span:nth-child(2) > span:nth-child(2) > span:nth-child(1)").text()
                 });
@@ -76,42 +113,11 @@ class Scraper {
         const data = {
                 id: Math.random().toString(16).slice(2),
                 pref: pref,
-                iterezaioak: iterezaioak,
+                iterazioak: iterazioak,
                 denbora: denbora,
-                details: details_selector
+                xehetasunak: details_selector
         }
         return data;
-    }
-
-    async getDetailedDirections (json) {
-        console.log("Getting detailed directions...");
-
-        // Preferntzia mota guztiak lortu
-        const preferences = [];
-        json.forEach(element => {
-            if (!preferences.includes(element['pref'])) {
-                preferences.push(element['pref']);
-            }
-        });
-
-        // Preferentzia bakoitzetik menua ireki eta hauek prozesatu
-        for (let pref = 0; pref < preferences.length; pref++) {
-            const preferentzia = preferences[pref];
-            
-            await this.puppet.openPreference(preferentzia);
-
-            for (let garraioa = 0; garraioa < json.length; garraioa++) {
-                if (json[garraioa]["pref"] === preferentzia) {
-                    json[garraioa].details = await this.getGarraioaDetails(json[garraioa]);
-                }
-            }
-
-            await this.puppet.closePreferences();
-        }
-
-        json = this.fillDirectiontransshipment(json);
-        json = this.removeDuplicates(json);
-        return json;
     }
 
     /**
@@ -121,34 +127,52 @@ class Scraper {
     */
     async getGarraioaDetails(garraioa) {
         // String-a bada details-ak kargatu ez direla esan nahi du.
-        if (typeof garraioa.details === "string") {
-            console.log("Getting details...");
-            const details_html = await this.puppet.getDirectionDetailsHtml(garraioa.details);
+        if (typeof garraioa.xehetasunak === "string") {
+            console.log("-> Getting details...");
+            const details_html = await this.puppet.getDirectionDetailsHtml(garraioa.xehetasunak);
             const $ = cheerio.load(details_html);
 
             const informazioa = $("div.tUEI8e > span:nth-child(1)").text();
             // $('.M3pmwc').html() menuaren informazioa lortzeko
-            const etapak = await this.extractEtapakData($('.M3pmwc').html());
+            const ibilbideak = await this.extractEtapakData($('.M3pmwc').html());
 
             return {
                 informazioa: informazioa,
-                etapak: etapak
+                ibilbideak: ibilbideak
             };
 
         } else {
-            return garraioa.details;
+            return garraioa.xehetasunak;
         }
     }
 
-    async extractEtapakData(etapak_html) {
-        const $ = cheerio.load(etapak_html);
-        const etapak_data = [];
+    async extractEtapakData(ibilbideak_html) {
+        const $ = cheerio.load(ibilbideak_html);
+        const ibilbideak_data = [];
 
         $("span[id^='transit_group_']").each((i, elem) => {
-            const mota = $(elem).find("div:nth-child(2) > div:nth-child(2) > div:nth-child(7) > div:nth-child(1) > div:nth-child(4) > div:nth-child(2) > div:nth-child(1) > span:nth-child(1) > img:nth-child(1)").attr("alt");
-            
-            if (mota === "bus", "train", "tram" && mota !== undefined) {
+            var mota_str = $(elem).find("div:nth-child(2) > div:nth-child(2) > div:nth-child(7) > div:nth-child(1) > div:nth-child(4) > div:nth-child(2) > div:nth-child(1) > span:nth-child(1) > img:nth-child(1)").attr("alt");
+            var mota = undefined;
+            switch (mota_str) {
+                case "Bus":
+                    mota = 0;
+                    break;
+                case "Train":
+                    mota = 1;
+                    break;
+                case "Tram":
+                    mota = 2;
+                    break;
+                case "Subway":
+                    mota = 3;
+                    break;
+                case "Walk":
+                    mota = 4;
+                    break;
+            }
 
+
+            if (0 <= mota && mota !== undefined) {
                 let den_hasi = $(elem).find("div.Lp2Gff div.gnWycb div.qbarme").text();
                 den_hasi = moment(den_hasi, "HH:mm a").format("HH:mm");
 
@@ -156,31 +180,40 @@ class Scraper {
                                         + $(elem).find("div.Ni8Gpb span.T1PeR div.lEcnMb.pxLwif").text();
                 den_bukaera = moment(den_bukaera, "HH:mm a").format("HH:mm");
 
-                etapak_data.push({
+                ibilbideak_data.push({
                     id: i,
-                    izena: $(elem).find("div.Ni8Gpb > div > div.transit-logical-step-content.noprint.za2rbe > div.voTEBc > div > div:nth-child(3) > div.Cc5bxc > span > span > span:nth-child(1) > a > span:nth-child(2)").text(),
-                    hasiera: $(elem).find("span.FzIExb > h2:nth-child(2)").text(),
-                    amaiera: $(elem).find("div.FzIExb > h2:nth-child(2)").text(),
+                    izena: $(elem).find("div:nth-child(2) > div:nth-child(2) > div:nth-child(7) > div:nth-child(1) > div:nth-child(4) > div:nth-child(2) > div:nth-child(1) > span:nth-child(2) > span:nth-child(2) > span:nth-child(2) > span:nth-child(1)").text(),
+                    helmuga: $(elem).find("div:nth-child(2) > div:nth-child(2) > div:nth-child(7) > div:nth-child(1) > div:nth-child(4) > div:nth-child(2) > div:nth-child(1) > span:nth-child(3) > span:nth-child(2) > span:nth-child(3)").text(),
+                    enpresa: $(elem).find("div:nth-child(2) > div:nth-child(2) > div:nth-child(7) > div:nth-child(2) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > span:nth-child(1) > span:nth-child(1) > span:nth-child(1) > a:nth-child(1) > span:nth-child(2)").text(),
+                    mota: mota,
+                    kokapena: {
+                        hasiera: $(elem).find("span.FzIExb > h2:nth-child(2)").text(),
+                        amaiera: $(elem).find("div.FzIExb > h2:nth-child(2)").text()
+                    },
                     denbora: {
                         hasiera: den_hasi, 
-                        bukaera: den_bukaera
-                    },
-                    garraioa: mota
+                        amaiera: den_bukaera
+                    }
                 });
             }
         });
-        return etapak_data;
+        return ibilbideak_data;
     }
 
-    // Transbordoak egotean hauen amaiera lekua ez da etaparen parte, baina hurrengoaren hasiera lekua da.
+    //----------------------------------------------------------------------------------------------------------------------
+    // Cleaning methods
+
+    /**
+     * Transbordoak egotean hauen amaiera lekua ez da etaparen parte, baina hurrengoaren hasiera lekua da.
+     **/ 
     fillDirectiontransshipment(json){
         // Length - 1 pref datua ez artzeko
         for (let garraioa = 0; garraioa < json.length; garraioa++) {
-            // etapak lortu
-            for (let etapa = 0; etapa < json[garraioa].details.etapak.length - 1; etapa++) {
+            // ibilbideak lortu
+            for (let etapa = 0; etapa < json[garraioa].xehetasunak.ibilbideak.length - 1; etapa++) {
                 // eta etaparen amaiera hurrengoaren hasiera bihurtu, hau hutsa bada.
-                if (json[garraioa].details.etapak[etapa].amaiera === "") {
-                    json[garraioa].details.etapak[etapa].amaiera = json[garraioa].details.etapak[etapa + 1].hasiera;;
+                if (json[garraioa].xehetasunak.ibilbideak[etapa].amaiera === "") {
+                    json[garraioa].xehetasunak.ibilbideak[etapa].amaiera = json[garraioa].xehetasunak.ibilbideak[etapa + 1].hasiera;;
                 }
             }
         }
@@ -194,7 +227,7 @@ class Scraper {
         for (let garraioa = 0; garraioa < json.length; garraioa++) {
             const ident = JSON.stringify({
                 denbora: json[garraioa].denbora,
-                iterazioak: json[garraioa].iterezaioak
+                iterazioak: json[garraioa].iterazioak
             })
             if (!denb_itin.includes(ident)) {
                 final_json.push(json[garraioa]);
@@ -210,7 +243,7 @@ class Scraper {
     }
 }
 
-const scraper = new Scraper();
+const scraper = new Manipulator();
 var informazioa = null;
 const fs = require('fs');
 //data = JSON.parse(fs.readFileSync('data.json', 'utf8'));
