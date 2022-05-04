@@ -247,7 +247,7 @@ const scraper = new Manipulator();
 var informazioa = null;
 const fs = require('fs');
 //data = JSON.parse(fs.readFileSync('data.json', 'utf8'));
-scraper.getBasicData("https://www.google.com/maps/dir/?api=1&origin=Bilbao&destination=Vladivostok&travelmode=transit").then(data => {
+scraper.getBasicData("https://www.google.com/maps/dir/?api=1&origin=Zalla&destination=Sodupe&travelmode=transit").then(data => {
     fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
     //scraper.finish();
     scraper.getDetailedDirections(data).then(data => {

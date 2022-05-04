@@ -4,7 +4,7 @@ const fs = require('fs').promises;
 class Puppet {
     browser
     page
-    headless = true
+    headless = false
 
     constructor() {
         this.browser = null;
@@ -30,9 +30,10 @@ class Puppet {
 
     async getDirectionDetailsHtml(selector) {
         const backSelector = ".ysKsp";
+        const panel_selector = ".miFGmb";
 
         // wait for the panel to load
-        await this.page.waitForSelector(".miFGmb")
+        await this.page.waitForSelector(panel_selector)
 
         await this.page.waitForSelector(selector)
         await this.page.click(selector)
@@ -44,20 +45,17 @@ class Puppet {
         } catch (error) {
             console.log("\tFirst datails click.")
         }
-
         console.log("\tTrip details clicked.")
 
         await this.page.waitForSelector("div.m6QErb:nth-child(2)")
-
-        // Get html
         const html = await this.page.content();
 
-
-        await this.page.waitForSelector('.miFGmb')
+        await this.page.waitForSelector(panel_selector)
         await this.page.waitForSelector(backSelector)
         await this.page.click(backSelector)
-
         console.log("\tTrip details closed.")
+
+        await this.page.waitForSelector("div.m6QErb:nth-child(4)")
 
         return html;
     }
@@ -97,11 +95,12 @@ class Puppet {
         console.log("-> Preference: " + pref)
         console.log("\tOpening preference.")
         const opt_selector = "button.OcYctc"
-        const bus_selector = "#transit-vehicle-prefer-0"
-        const train_selector = "#transit-vehicle-prefer-2"
-        const tram_selector = "#transit-vehicle-prefer-3"
-        const subway_selector = "#transit-vehicle-prefer-1"
+        const bus_selector = ".U8X7Nb > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > label:nth-child(2)"
+        const train_selector = ".U8X7Nb > div:nth-child(1) > div:nth-child(4) > div:nth-child(1) > label:nth-child(2)"
+        const tram_selector = ".U8X7Nb > div:nth-child(1) > div:nth-child(5) > div:nth-child(1) > label:nth-child(2)"
+        const subway_selector = ".U8X7Nb > div:nth-child(1) > div:nth-child(3) > div:nth-child(1) > label:nth-child(2)"
 
+        // Preferentzia menua itxaron
         await this.page.waitForSelector("div.MlqQ3d:nth-child(2)")
 
         await this.page.waitForSelector(opt_selector)
