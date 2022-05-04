@@ -13,12 +13,12 @@ class Manipulator {
 
     async getBasicData(url) {
         console.log("Getting basic data...");
-        let directions = [];
+        var directions = [];
 
         var html_dictionary = await this.puppet.getAllPreferenceDirections(url)
         for (const [key, value] of Object.entries(html_dictionary)) {
             var basic_garraio_multzoa = this.getBasicDirections(value, key);
-            for (let garraioa = 0; garraioa < basic_garraio_multzoa.length; garraioa++) {
+            for (var garraioa = 0; garraioa < basic_garraio_multzoa.length; garraioa++) {
                 directions.push(basic_garraio_multzoa[garraioa]);
             }
         }
@@ -43,12 +43,12 @@ class Manipulator {
         });
 
         // Preferentzia bakoitzetik menua ireki eta hauek prozesatu
-        for (let pref = 0; pref < preferences.length; pref++) {
+        for (var pref = 0; pref < preferences.length; pref++) {
             const preferentzia = preferences[pref];
             
             await this.puppet.openPreference(preferentzia);
 
-            for (let garraioa = 0; garraioa < json.length; garraioa++) {
+            for (var garraioa = 0; garraioa < json.length; garraioa++) {
                 if (json[garraioa]["pref"] === preferentzia) {
                     json[garraioa].xehetasunak = await this.getGarraioaDetails(json[garraioa]);
                 }
@@ -68,8 +68,8 @@ class Manipulator {
     getBasicDirections(html, pref = '') {
         console.log("Extracting basic directions...");
 
-        let directions = [];
-        let $ = cheerio.load(html);
+        var directions = [];
+        var $ = cheerio.load(html);
 
         $("div[id^='section-directions-trip']").each((i, elem) => {
             var basic_garraioa = this.extractBasicData(i, elem, pref)
@@ -97,7 +97,7 @@ class Manipulator {
         // lortu desberdintazuna minututan
         denbora.iraupena = $("div[class='Fk3sm fontHeadlineSmall']").text();
 
-        let iterazioak = [];
+        var iterazioak = [];
         $("div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > span").each((i, elem) => {
             if (i % 2 === 0) {
                 iterazioak.push({
@@ -173,10 +173,10 @@ class Manipulator {
 
 
             if (0 <= mota && mota !== undefined) {
-                let den_hasi = $(elem).find("div.Lp2Gff div.gnWycb div.qbarme").text();
+                var den_hasi = $(elem).find("div.Lp2Gff div.gnWycb div.qbarme").text();
                 den_hasi = moment(den_hasi, "HH:mm a").format("HH:mm");
 
-                let den_bukaera = $(elem).find("div.Lp2Gff div.gnWycb div.o4X11d").text()
+                var den_bukaera = $(elem).find("div.Lp2Gff div.gnWycb div.o4X11d").text()
                                         + $(elem).find("div.Ni8Gpb span.T1PeR div.lEcnMb.pxLwif").text();
                 den_bukaera = moment(den_bukaera, "HH:mm a").format("HH:mm");
 
@@ -208,9 +208,9 @@ class Manipulator {
      **/ 
     fillDirectiontransshipment(json){
         // Length - 1 pref datua ez artzeko
-        for (let garraioa = 0; garraioa < json.length; garraioa++) {
+        for (var garraioa = 0; garraioa < json.length; garraioa++) {
             // ibilbideak lortu
-            for (let etapa = 0; etapa < json[garraioa].xehetasunak.ibilbideak.length - 1; etapa++) {
+            for (var etapa = 0; etapa < json[garraioa].xehetasunak.ibilbideak.length - 1; etapa++) {
                 // eta etaparen amaiera hurrengoaren hasiera bihurtu, hau hutsa bada.
                 if (json[garraioa].xehetasunak.ibilbideak[etapa].amaiera === "") {
                     json[garraioa].xehetasunak.ibilbideak[etapa].amaiera = json[garraioa].xehetasunak.ibilbideak[etapa + 1].hasiera;;
@@ -224,7 +224,7 @@ class Manipulator {
     removeDuplicates(json) {
         var denb_itin = denb_itin = [];
         var final_json = [];
-        for (let garraioa = 0; garraioa < json.length; garraioa++) {
+        for (var garraioa = 0; garraioa < json.length; garraioa++) {
             const ident = JSON.stringify({
                 denbora: json[garraioa].denbora,
                 iterazioak: json[garraioa].iterazioak
@@ -244,10 +244,10 @@ class Manipulator {
 }
 
 const scraper = new Manipulator();
-var informazioa = null;
+// var informazioa = null;
 const fs = require('fs');
-//data = JSON.parse(fs.readFileSync('data.json', 'utf8'));
-scraper.getBasicData("https://www.google.com/maps/dir/?api=1&origin=Zalla&destination=Sodupe&travelmode=transit").then(data => {
+// //data = JSON.parse(fs.readFileSync('data.json', 'utf8'));
+scraper.getBasicData("https://www.google.com/maps/dir/?api=1&origin=Sodupe&destination=&travelmode=transit").then(data => {
     fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
     //scraper.finish();
     scraper.getDetailedDirections(data).then(data => {
@@ -256,4 +256,3 @@ scraper.getBasicData("https://www.google.com/maps/dir/?api=1&origin=Zalla&destin
         scraper.finish();
     })
 })
-

@@ -21,7 +21,8 @@ class Puppet {
         }
 
         await this.openPreference(pref);
-        await this.page.waitForSelector(".etbuEf")
+        // Lehenegoa bidaien bidaien panela itxaroten du, bigarrena bidaiarik ez badago agertzen da. Bigarrena atazkatuta ez geratzeko erabiltzen da
+        await this.page.waitForSelector(".etbuEf, #pane > div > div.e07Vkf.kA9KIf > div > div > div.hBX6ld.fontBodyMedium")
         html = await this.page.content();
         await this.closePreferences();
 
@@ -84,7 +85,8 @@ class Puppet {
         await this.page.setCookie(...cookies);
         await this.page.goto(url);
 
-        await this.page.waitForSelector("div.m6QErb:nth-child(4)")
+        // Lehenegoa bidaien bidaien panela itxaroten du, bigarrena bidaiarik ez badago agertzen da. Bigarrena atazkatuta ez geratzeko erabiltzen da
+        await this.page.waitForSelector("div.m6QErb:nth-child(4), #pane > div > div.e07Vkf.kA9KIf > div > div > div.hBX6ld.fontBodyMedium")
 
         // Cookiak lortzeko
         // const cookies = await this.page.cookies();
