@@ -24,17 +24,18 @@ class Scraper {
         const fs = require('fs');
         fs.writeFileSync('data.json', JSON.stringify(directions, null, 2));
 
+        directions = this.removeDuplicates(directions);
         return directions;
     }
 
     getBasicDirections(html, pref = '') {
-        console.log("Getting basic directions...");
+        console.log("Extracting basic directions...");
 
         let directions = [];
         let $ = cheerio.load(html);
 
         $("div[id^='section-directions-trip']").each((i, elem) => {
-            var basic_garraioa = this.extractBasicData(i, $(elem), pref)
+            var basic_garraioa = this.extractBasicData(i, elem, pref)
             directions.push(basic_garraioa);
         });
 
@@ -42,27 +43,40 @@ class Scraper {
     }
 
     extractBasicData (i, elem, pref = '') {
+        console.log("-> Extracting trip data...");
         const id = i;
+        const $ = cheerio.load(elem);
 
         // ^ erabiltzen da css_selector-ean regex erabiltzeko. 
         const denbora = {
-            hasiera: elem.find("h1[id^='section-directions-trip-title-'] > span:nth-child(2) > span:nth-child(1)").text(),
-            bukaera: elem.find("h1[id^='section-directions-trip-title-'] > span:nth-child(2) > span:nth-child(2)").text(),
-            iraupena: elem.find("div[class='Fk3sm fontHeadlineSmall']").text(),
+            hasiera: $("h1[id^='section-directions-trip-title-'] > span:nth-child(2) > span:nth-child(1)").text(),
+            bukaera: $("h1[id^='section-directions-trip-title-'] > span:nth-child(2) > span:nth-child(2)").text(),
+            iraupena: $("div[class='Fk3sm fontHeadlineSmall']").text(),
         }
 
         // Denborari formatua aldatu
         denbora.hasiera = moment(denbora.hasiera, "HH:mm a").format("HH:mm");
         denbora.bukaera = moment(denbora.bukaera, "HH:mm a").format("HH:mm");
         // lortu desberdintazuna minututan
-        denbora.iraupena = elem.find("div[class='Fk3sm fontHeadlineSmall']").text();
+        denbora.iraupena = $("div[class='Fk3sm fontHeadlineSmall']").text();
 
-        const details_selector = '#' + elem.find("img").attr("id");
+        let iterezaioak = [];
+        $("div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > span").each((i, elem) => {
+            if (i % 2 === 0) {
+                iterezaioak.push({
+                    img: $(elem).find("span:nth-child(1) > img:nth-child(1)").attr("alt"), 
+                    text: $(elem).find("span:nth-child(2) > span:nth-child(2) > span:nth-child(2) > span:nth-child(1)").text()
+                });
+            }                                             
+        });
+
+        const details_selector = '#' + $("img").attr("id");
 
         // return a json with the data
         const data = {
                 id: Math.random().toString(16).slice(2),
                 pref: pref,
+                iterezaioak: iterezaioak,
                 denbora: denbora,
                 details: details_selector
         }
@@ -92,14 +106,11 @@ class Scraper {
                 }
             }
 
-            await this.puppet.openPreference(pref);
-            // wait for 2 seconds
-            await this.puppet.page.waitForTimeout(2000);
-            await this.puppet.page.click(".OcYctc > span:nth-child(2)");
+            await this.puppet.closePreferences();
         }
 
         json = this.fillDirectiontransshipment(json);
-
+        json = this.removeDuplicates(json);
         return json;
     }
 
@@ -123,14 +134,13 @@ class Scraper {
                 informazioa: informazioa,
                 etapak: etapak
             };
+
         } else {
             return garraioa.details;
         }
-        
     }
 
     async extractEtapakData(etapak_html) {
-
         const $ = cheerio.load(etapak_html);
         const etapak_data = [];
 
@@ -155,7 +165,7 @@ class Scraper {
                         hasiera: den_hasi, 
                         bukaera: den_bukaera
                     },
-                    mota: mota
+                    garraioa: mota
                 });
             }
         });
@@ -164,23 +174,34 @@ class Scraper {
 
     // Transbordoak egotean hauen amaiera lekua ez da etaparen parte, baina hurrengoaren hasiera lekua da.
     fillDirectiontransshipment(json){
-        if (json.hasOwnProperty("pref")) {
-            for (let garraio_multzoa = 0; garraio_multzoa < json.length; garraio_multzoa++) {
-                // Length - 1 pref datua ez artzeko
-                for (let garraioa = 0; garraioa < json.length - 1; garraioa++) {
-                    // etapak lortu
-                    for (let etapa = 0; etapa < json[garraio_multzoa][garraioa].details.etapak.length; etapa++) {
-                        // eta etaparen amaiera hurrengoaren hasiera bihurtu, hau hutsa bada.
-                        if (json[garraio_multzoa][garraioa].details.etapak[etapa].amaiera === "") {
-                            json[garraio_multzoa][garraioa].details.etapak[etapa].amaiera = json[garraio_multzoa][garraioa].details.etapak[etapa + 1].hasiera;;
-                        }
-                    }
+        // Length - 1 pref datua ez artzeko
+        for (let garraioa = 0; garraioa < json.length; garraioa++) {
+            // etapak lortu
+            for (let etapa = 0; etapa < json[garraioa].details.etapak.length - 1; etapa++) {
+                // eta etaparen amaiera hurrengoaren hasiera bihurtu, hau hutsa bada.
+                if (json[garraioa].details.etapak[etapa].amaiera === "") {
+                    json[garraioa].details.etapak[etapa].amaiera = json[garraioa].details.etapak[etapa + 1].hasiera;;
                 }
             }
         }
-        
 
         return json;
+    }
+
+    removeDuplicates(json) {
+        var denb_itin = denb_itin = [];
+        var final_json = [];
+        for (let garraioa = 0; garraioa < json.length; garraioa++) {
+            const ident = JSON.stringify({
+                denbora: json[garraioa].denbora,
+                iterazioak: json[garraioa].iterezaioak
+            })
+            if (!denb_itin.includes(ident)) {
+                final_json.push(json[garraioa]);
+                denb_itin.push(ident);
+            }
+        }
+        return final_json;
     }
 
     // Itxi puppeteer
@@ -191,19 +212,15 @@ class Scraper {
 
 const scraper = new Scraper();
 var informazioa = null;
-//const fs = require('fs');
+const fs = require('fs');
 //data = JSON.parse(fs.readFileSync('data.json', 'utf8'));
-scraper.getBasicData("https://www.google.com/maps/dir/?api=1&origin=Madrid&destination=Paris&travelmode=transit").then(data => {
-    informazioa = data;
-    console.log(informazioa);
-    scraper.finish();
-});
-// .then(data => {
-//     scraper.getDetailedDirections(data).then(function(values) {
-//         // save file 
-//         fs.writeFileSync('data.json', JSON.stringify(values, null, 2));
-//         scraper.finish();
-//     });
-// })
-
+scraper.getBasicData("https://www.google.com/maps/dir/?api=1&origin=Bilbao&destination=Vladivostok&travelmode=transit").then(data => {
+    fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
+    //scraper.finish();
+    scraper.getDetailedDirections(data).then(data => {
+        // save data to file
+        fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
+        scraper.finish();
+    })
+})
 
