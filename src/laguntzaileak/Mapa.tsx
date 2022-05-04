@@ -33,20 +33,6 @@ const endIcon: L.Icon = L.icon({
 let lerroa: L.Polyline;
 
 export function aukeraIrudikatu(aukera: Aukera) {
-  var xhr = new XMLHttpRequest();
-  $.ajax({
-    url: 'https://cors-anywhere.herokuapp.com/https://www.google.com/maps/search/Bilbao',
-    type: 'get',
-    xhr: function() {
-        return xhr;
-    },
-    success: function() {
-        let erantzuna = xhr.responseText;
-        let content = erantzuna.match('') //<meta content="https:\/\/maps\.google\.com\/maps\/api\/staticmap\?(center=.*)&amp;zoom=.*
-
-    },
-    async: false
-  });
   markerGuztiakEzabatu();
 
   // Aukeraren garraiobide guztiak zeharkatu
@@ -72,26 +58,40 @@ function markerSortu(lekua: string, index: Number, markerIcon: L.Icon) {
 
     markerGehitu(marker);
   } else {
-    // Nominatim erabiliz lekuaren koordenatuak lortu
-    var Nominatim = require("nominatim-browser");
-    Nominatim.geocode({
-      q: lekua,
-      limit: 1
-    })
-      .then((result: NominatimResponse[]) => {
-        setLekuarenKoordenatuak(lekua, { lat: Number(result[0].lat), lng: Number(result[0].lon) });
-        // Marker sortu
-        let marker = L.marker([Number(result[0].lat), Number(result[0].lon)], {
-          title: lekua,
-          icon: markerIcon,
-          alt: index.toString() // Lerroan ordenatzeko
-        });
+    var xhr = new XMLHttpRequest();
+    $.ajax({
+      async: true,
+      url: 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://www.google.com/maps/search/'+lekua),
+      type: 'get',
+      dataType: 'json',
+      xhr: function() {
+          return xhr;
+      },
+      success: function() {
+          let erantzuna = JSON.parse(xhr.response).contents;
+          console.log(erantzuna)
+          let regexLatLng = /<meta content="https:\/\/maps\.google\.com\/maps\/api\/staticmap\?center=(?<lat>\-?[0-9]*.[0-9]*)%2C(?<lng>\-?[0-9]*.[0-9]*)[^>]*>/m
+          let match: RegExpExecArray|null = regexLatLng.exec(erantzuna)
+          console.log(match)
+          if (match !== null) {
+            console.log(lekua)
+            console.log(match.groups!.lat)
+            console.log(match.groups!.lng)
 
-        markerGehitu(marker);
-      }).catch((error: any) => {
-        console.log('ERROR | lekua: ' + lekua);
-        console.log(error);
-      });
+            setLekuarenKoordenatuak(lekua, { lat: Number(match.groups!.lat), lng: Number(match.groups!.lng) });
+            // Marker sortu
+            let marker = L.marker([Number(match.groups!.lat), Number(match.groups!.lng)], {
+              title: lekua,
+              icon: markerIcon,
+              alt: index.toString() // Lerroan ordenatzeko
+            });
+
+            markerGehitu(marker);
+          } else {
+            console.log("ERROR | Ezin izan dira koordenatuak lortu. lekua: "+lekua)
+          }
+      }
+    });
   }
 }
 
