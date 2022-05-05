@@ -29,7 +29,9 @@ class Manipulator {
         const fs = require('fs');
         fs.writeFileSync('data.json', JSON.stringify(directions, null, 2));
 
+        console.log("Removing duplicates.");
         directions = this.removeDuplicates(directions);
+        console.log("Finished getting basic data.");
         return directions;
     }
 
@@ -58,9 +60,11 @@ class Manipulator {
 
             await this.puppet.closePreferences();
         }
-
+        console.log("Filtering json files...");
         json = this.fillDirectiontransshipment(json);
         json = this.removeDuplicates(json);
+
+        console.log("Finished getting detailed directions.");
         return json;
     }
 
