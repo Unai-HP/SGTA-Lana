@@ -5,6 +5,7 @@ class Puppet {
     browser
     page
     headless = false
+    args = ['--lang=en-US']
 
     constructor() {
         this.browser = null;
@@ -80,7 +81,7 @@ class Puppet {
         const cookiesString = await fs.readFile('./cookies.json');
         const cookies = JSON.parse(cookiesString);
 
-        this.browser = await puppeteer.launch({ headless: this.headless });
+        this.browser = await puppeteer.launch({ headless: this.headless, args: this.args });
         this.page = await this.browser.newPage();
         await this.page.setCookie(...cookies);
         await this.page.goto(url);
@@ -181,3 +182,6 @@ class Puppet {
     }
 }
 exports.Puppet = Puppet;
+
+const puppet = new Puppet();
+puppet.openGoogleMaps('https://www.google.com/');

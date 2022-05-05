@@ -1,7 +1,7 @@
 const cheerio = require("cheerio");
-const { Puppet } = require("./puppeting");
 const moment = require("moment");
 const Math = require("mathjs");
+const { Puppet } = require("./puppeting");
 
 class Manipulator {
     constructor() {
@@ -11,8 +11,10 @@ class Manipulator {
     //---------------------------------------------------------------------------------------------------------------------
     // Data getters
 
-    async getBasicData(url) {
+    async getBasicData(origin, destination) {
         console.log("Getting basic data...");
+        const url = 'https://www.google.com/maps/dir/?api=1&origin='+origin+'&destination='+destination+'&travelmode=transit'
+
         var directions = [];
 
         var html_dictionary = await this.puppet.getAllPreferenceDirections(url)
@@ -186,7 +188,7 @@ class Manipulator {
                     helmuga: $(elem).find("div:nth-child(2) > div:nth-child(2) > div:nth-child(7) > div:nth-child(1) > div:nth-child(4) > div:nth-child(2) > div:nth-child(1) > span:nth-child(3) > span:nth-child(2) > span:nth-child(3)").text(),
                     enpresa: $(elem).find("div:nth-child(2) > div:nth-child(2) > div:nth-child(7) > div:nth-child(2) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > span:nth-child(1) > span:nth-child(1) > span:nth-child(1) > a:nth-child(1) > span:nth-child(2)").text(),
                     mota: mota,
-                    kokapena: {
+                    kokapenak: {
                         hasiera: $(elem).find("span.FzIExb > h2:nth-child(2)").text(),
                         amaiera: $(elem).find("div.FzIExb > h2:nth-child(2)").text()
                     },
@@ -242,17 +244,18 @@ class Manipulator {
         this.puppet.close();
     }
 }
+exports.Manipulator = Manipulator;
 
-const scraper = new Manipulator();
-// var informazioa = null;
-const fs = require('fs');
-// //data = JSON.parse(fs.readFileSync('data.json', 'utf8'));
-scraper.getBasicData("https://www.google.com/maps/dir/?api=1&origin=Sodupe&destination=&travelmode=transit").then(data => {
-    fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
-    //scraper.finish();
-    scraper.getDetailedDirections(data).then(data => {
-        // save data to file
-        fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
-        scraper.finish();
-    })
-})
+// const scraper = new Manipulator();
+// // var informazioa = null;
+// const fs = require('fs');
+// // //data = JSON.parse(fs.readFileSync('data.json', 'utf8'));
+// scraper.getBasicData('Bilbo', "Zalla").then(data => {
+//     fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
+//     //scraper.finish();
+//     scraper.getDetailedDirections(data).then(data => {
+//         // save data to file
+//         fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
+//         scraper.finish();
+//     })
+// })
