@@ -43,7 +43,7 @@ export function Informazioa(props: any) {
         {(props.selectedAukera != undefined && 'ibilbideak' in props.selectedAukera.xehetasunak) && props.selectedAukera.xehetasunak.ibilbideak.map((ib: Ibilbidea) => (
           <IonCard key={ib.id}>
             <IonCardHeader>
-              <IonTitle><IonThumbnail><IonImg src={mota2icon(ib.mota)} /></IonThumbnail> {ib.izena} {ib.helmuga}</IonTitle>
+              <IonTitle><IonThumbnail><IonImg src={mota2icon(ib.mota)} /></IonThumbnail> {ib.izena} {"|"} {ib.helmuga}</IonTitle>
             </IonCardHeader>
             <IonCardContent>
               {ib.kokapenak.hasiera} <IonIcon icon={arrowForward} /> {ib.kokapenak.amaiera}<br />

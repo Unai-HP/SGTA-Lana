@@ -98,6 +98,9 @@ class Manipulator {
         denbora.amaiera = moment(denbora.amaiera, "HH:mm a").format("HH:mm");
         // lortu desberdintazuna minututan
         denbora.iraupena = $("div[class='Fk3sm fontHeadlineSmall']").text();
+        //TODO regex garatzen jarraitu
+        let regEx = /((?<d>[0-9]{1,2}) día[s]?)?((?<h>[0-9]{1,2}) h)?((?<m>[0-9]{1,2}) min)?/gm
+        let match = regEx.exec("1 día 2 h 3 min");
 
         var iterazioak = [];
         $("div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > span").each((i, elem) => {
