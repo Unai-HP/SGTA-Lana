@@ -32,11 +32,13 @@ class Puppet {
 
     async getDirectionDetailsHtml(selector) {
         const backSelector = ".ysKsp";
-        const panel_selector = ".miFGmb";
+        // const panel_selector = "#pane > div > div.e07Vkf.kA9KIf > div > div > div.m6QErb";
 
-        // wait for the panel to load
-        await this.page.waitForSelector(panel_selector)
+        // console.log("\tWaiting for panel to appear...")
+        // // wait for the panel to load
+        // await this.page.waitForSelector(panel_selector)
 
+        console.log("\tWaiting for selector (" + selector + ") to appear...")
         await this.page.waitForSelector(selector)
         await this.page.click(selector)
 
@@ -49,14 +51,16 @@ class Puppet {
         }
         console.log("\tTrip details clicked.")
 
+        console.log("\tWaiting for content to appear...")
         await this.page.waitForSelector("div.m6QErb:nth-child(2)")
         const html = await this.page.content();
 
-        await this.page.waitForSelector(panel_selector)
+        console.log("\tWaiting for back selector to appear...")
         await this.page.waitForSelector(backSelector)
         await this.page.click(backSelector)
         console.log("\tTrip details closed.")
 
+        console.log("\tWaiting for page to load...")
         await this.page.waitForSelector("div.m6QErb:nth-child(4)")
 
         return html;
@@ -126,6 +130,8 @@ class Puppet {
                 await this.page.click(subway_selector)
                 break;
         }
+
+        await this.page.waitForSelector("div.m6QErb:nth-child(1)")
     }
 
     async closePreferences() {  
