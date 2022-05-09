@@ -4,7 +4,7 @@ const fs = require('fs').promises;
 class Puppet {
     browser
     page
-    headless = false
+    headless = true
     args = []
 
     constructor() {
@@ -81,7 +81,7 @@ class Puppet {
         const cookiesString = await fs.readFile('./cookies.json');
         const cookies = JSON.parse(cookiesString);
 
-        this.browser = await puppeteer.launch({ headless: this.headless, args: this.args });
+        this.browser = await puppeteer.launch({ headless: this.headless, env: { LANGUAGE: "en_US" } });
         this.page = await this.browser.newPage();
         await this.page.goto(url);
 
