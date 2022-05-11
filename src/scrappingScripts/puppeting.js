@@ -60,9 +60,6 @@ class Puppet {
         await this.page.click(backSelector)
         console.log("\tTrip details closed.")
 
-        console.log("\tWaiting for page to load...")
-        await this.page.waitForSelector("div.m6QErb:nth-child(4)")
-
         return html;
     }
 
