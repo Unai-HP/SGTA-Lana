@@ -5,6 +5,8 @@ import moment from 'moment';
 import { test } from '../pages/Emaitza';
 import { aukeraIrudikatu } from "../laguntzaileak/Mapa";
 import { aukeraKonparatuAmaiera, aukeraKonparatuIraupena } from '../laguntzaileak/AukeraKonparazioak';
+import $ from "jquery";
+
 
 //#region Components
 export function AukerenZerrenda(props: any) {
@@ -12,9 +14,24 @@ export function AukerenZerrenda(props: any) {
 
   useEffect(() => {
     // Unai sortutako funtzioarekin aldatu
-    test(props.hasiera, props.helmuga).then(aukerak => {
-      setAukeraData(aukerak);
-    });
+    // test(props.hasiera, props.helmuga).then(aukerak => {
+    //   setAukeraData(aukerak);
+    // });
+	var xhr = new XMLHttpRequest();
+	console.log(props.hasiera);
+    $.ajax({
+	  async: true,
+      url: 'http://localhost:8080/BasicData?origin='+props.hasiera+'&destination='+props.helmuga,
+      contentType: 'json',
+	  xhr: function() {
+		return xhr;
+	  },
+	  success: function() {
+		let erantzuna = JSON.parse(xhr.response).contents;
+		console.log(erantzuna);
+		setAukeraData(erantzuna);
+	  }
+	})
   }, []);
 
   function aukerakOrdenatu() {
