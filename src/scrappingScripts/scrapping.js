@@ -3,6 +3,16 @@ const moment = require("moment");
 const Math = require("mathjs");
 const { Puppet } = require("./puppeting");
 
+function ampmto24h(h, a) {
+    h = parseInt(h)
+    if (a.toLowerCase() === "am" && h === 12) h = 0
+    if (a.toLowerCase() === "pm") {
+        if (h !== 12) h += 12
+    }
+    let emaitza = h.toString()
+    return (emaitza.length === 1) ? "0" + emaitza : emaitza
+}
+
 class Manipulator {
     constructor() {
         this.puppet = new Puppet();
@@ -103,7 +113,7 @@ class Manipulator {
 
         // // Denborari formatua aldatu
         let iraupenaRegEx = /((?<d>[0-9]{1,2}) (día[s]?|day[s]?))?((?<h>[0-9]{1,2}) (h|hr))?((?<m>[0-9]{1,2}) min)?/gm
-        let orduaRegEx = /(?<h>[0-9]{1,2}):(?<m>[0-9]{2})/gm
+        let orduaRegEx = /(?<h>[0-9]{1,2}):(?<m>[0-9]{2}) (?<a>(AM|PM))/gm
 
         let hasieraMatch = orduaRegEx.exec(denbora.hasiera);
         orduaRegEx.lastIndex = 0;
@@ -112,8 +122,8 @@ class Manipulator {
         console.log(denbora.iraupena)
         console.log(iraupenaMatch)
 
-        denbora.hasiera = hasieraMatch['groups']['h'] + ":" + hasieraMatch['groups']['m']
-        denbora.amaiera = amaieraMatch['groups']['h'] + ":" + amaieraMatch['groups']['m']
+        denbora.hasiera = ampmto24h(hasieraMatch['groups']['h'], hasieraMatch['groups']['a']) + ":" + hasieraMatch['groups']['m']
+        denbora.amaiera = ampmto24h(amaieraMatch['groups']['h'], amaieraMatch['groups']['a']) + ":" + amaieraMatch['groups']['m']
         denbora.iraupena = ((iraupenaMatch['groups']['d'] !== undefined) ? iraupenaMatch['groups']['d'] + ":" : "00:") + 
             ((iraupenaMatch['groups']['h'] !== undefined) ? iraupenaMatch['groups']['h'] + ":" : "00:") +
             ((iraupenaMatch['groups']['m'] !== undefined) ? iraupenaMatch['groups']['m'] : "00")
@@ -194,8 +204,8 @@ class Manipulator {
 
 
             if (0 <= mota && mota !== undefined) {
-                let orduaRegEx = /(?<h>[0-9]{1,2}):(?<m>[0-9]{2})/gm
-                
+                let orduaRegEx = /(?<h>[0-9]{1,2}):(?<m>[0-9]{2}) (?<a>(AM|PM))/gm
+
                 var den_hasi = $(elem).find("div.Lp2Gff div.gnWycb div.qbarme").text();
                 var den_bukaera = $(elem).find("div.Lp2Gff div.gnWycb div.o4X11d").text()
                                         + $(elem).find("div.Ni8Gpb span.T1PeR div.lEcnMb.pxLwif").text();
@@ -204,8 +214,8 @@ class Manipulator {
                 orduaRegEx.lastIndex = 0;
                 let amaieraMatch = orduaRegEx.exec(den_bukaera);
 
-                den_hasi = hasieraMatch['groups']['h'] + ":" + hasieraMatch['groups']['m']
-                den_bukaera = amaieraMatch['groups']['h'] + ":" + amaieraMatch['groups']['m']
+                den_hasi = ampmto24h(hasieraMatch['groups']['h'], hasieraMatch['groups']['a']) + ":" + hasieraMatch['groups']['m']
+                den_bukaera = ampmto24h(amaieraMatch['groups']['h'], amaieraMatch['groups']['a']) + ":" + amaieraMatch['groups']['m']
 
                 ibilbideak_data.push({
                     id: i,
