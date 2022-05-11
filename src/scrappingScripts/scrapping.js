@@ -101,6 +101,7 @@ class Manipulator {
             iraupena: $("div[class='Fk3sm fontHeadlineSmall']").text(),
         }
 
+        console.log(denbora)
         // // Denborari formatua aldatu
         let iraupenaRegEx = /((?<d>[0-9]{1,2}) (día[s]?|day[s]?))?((?<h>[0-9]{1,2}) (h|hr))?((?<m>[0-9]{1,2}) min)?/gm
         let orduaRegEx = /(?<h>[0-9]{1,2}):(?<m>[0-9]{2})/gm
@@ -199,8 +200,9 @@ class Manipulator {
                 var den_hasi = $(elem).find("div.Lp2Gff div.gnWycb div.qbarme").text();
                 var den_bukaera = $(elem).find("div.Lp2Gff div.gnWycb div.o4X11d").text()
                                         + $(elem).find("div.Ni8Gpb span.T1PeR div.lEcnMb.pxLwif").text();
-
-                let hasieraMatch = orduaRegEx.exec(den_bukaera);
+                console.log(den_hasi)
+                console.log(den_bukaera)
+                let hasieraMatch = orduaRegEx.exec(den_hasi);
                 orduaRegEx.lastIndex = 0;
                 let amaieraMatch = orduaRegEx.exec(den_bukaera);
 
@@ -271,16 +273,16 @@ class Manipulator {
 }
 exports.Manipulator = Manipulator;
 
-const scraper = new Manipulator();
- // var informazioa = null;
-const fs = require('fs');
-// //data = JSON.parse(fs.readFileSync('data.json', 'utf8'));
-scraper.getBasicData('Bilbo', "Sodupe").then(data => {
-    fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
-    // scraper.finish();
-    scraper.getDetailedDirections(data).then(data => {
-        // save data to file
-        fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
-        scraper.finish();
-    })
-})
+// const scraper = new Manipulator();
+//  // var informazioa = null;
+// const fs = require('fs');
+// // //data = JSON.parse(fs.readFileSync('data.json', 'utf8'));
+// scraper.getBasicData('Bilbo', "Sodupe").then(data => {
+//     fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
+//     // scraper.finish();
+//     scraper.getDetailedDirections(data).then(data => {
+//         // save data to file
+//         fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
+//         scraper.finish();
+//     })
+// })

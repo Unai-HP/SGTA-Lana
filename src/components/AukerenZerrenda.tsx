@@ -21,13 +21,13 @@ export function AukerenZerrenda(props: any) {
 	console.log(props.hasiera);
     $.ajax({
 	  async: true,
-      url: 'http://localhost:8080/BasicData?origin='+props.hasiera+'&destination='+props.helmuga,
+      url: 'http://localhost:8080/FullData?origin='+props.hasiera+'&destination='+props.helmuga,
       contentType: 'json',
 	  xhr: function() {
 		return xhr;
 	  },
 	  success: function() {
-		let erantzuna = JSON.parse(xhr.response).contents;
+		let erantzuna = JSON.parse(xhr.response);
 		console.log(erantzuna);
 		setAukeraData(erantzuna);
 	  }
