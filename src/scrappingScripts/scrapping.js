@@ -102,27 +102,21 @@ class Manipulator {
         }
 
         // // Denborari formatua aldatu
-        // let iraupenaRegEx = /((?<d>[0-9]{1,2}) (día[s]?|day[s]?))?((?<h>[0-9]{1,2}) (h|hr))?((?<m>[0-9]{1,2}) min)?/gm
-        // let orduaRegEx = /(?<h>[0-9]{1,2}):(?<m>[0-9]{2})/gm
+        let iraupenaRegEx = /((?<d>[0-9]{1,2}) (día[s]?|day[s]?))?((?<h>[0-9]{1,2}) (h|hr))?((?<m>[0-9]{1,2}) min)?/gm
+        let orduaRegEx = /(?<h>[0-9]{1,2}):(?<m>[0-9]{2})/gm
 
-        // let hasieraMatch = orduaRegEx.exec(denbora.hasiera);
-        // let amaieraMatch = orduaRegEx.exec(denbora.amaiera);
-        // let iraupenaMatch = iraupenaRegEx.exec(denbora.iraupena);
+        let hasieraMatch = orduaRegEx.exec(denbora.hasiera);
+        orduaRegEx.lastIndex = 0;
+        let amaieraMatch = orduaRegEx.exec(denbora.amaiera);
+        let iraupenaMatch = iraupenaRegEx.exec(denbora.iraupena);
+        console.log(denbora.iraupena)
+        console.log(iraupenaMatch)
 
-        // denbora.hasiera = hasieraMatch.groups.h + ":" + hasieraMatch.groups.m
-        // denbora.amaiera = amaieraMatch.groups.h + ":" + amaieraMatch.groups.m
-        // denbora.iraupena = (iraupenaMatch.groups.d !== null) ? iraupenaMatch.groups.d + ":" : "" + 
-        //     (iraupenaMatch.groups.h !== null) ? iraupenaMatch.groups.h + ":" : "00:" +
-        //     (iraupenaMatch.groups.m !== null) ? iraupenaMatch.groups.m + ":" : "00:"
-
-        // Denborari formatua aldatu
-        denbora.hasiera = moment(denbora.hasiera, "HH:mm a").format("HH:mm");
-        denbora.amaiera = moment(denbora.amaiera, "HH:mm a").format("HH:mm");
-        // lortu desberdintazuna minututan
-        denbora.iraupena = $("div[class='Fk3sm fontHeadlineSmall']").text();
-        //TODO regex garatzen jarraitu
-        let regEx = /((?<d>[0-9]{1,2}) día[s]?)?((?<h>[0-9]{1,2}) h)?((?<m>[0-9]{1,2}) min)?/gm
-        let match = regEx.exec("1 día 2 h 3 min");
+        denbora.hasiera = hasieraMatch['groups']['h'] + ":" + hasieraMatch['groups']['m']
+        denbora.amaiera = amaieraMatch['groups']['h'] + ":" + amaieraMatch['groups']['m']
+        denbora.iraupena = ((iraupenaMatch['groups']['d'] !== undefined) ? iraupenaMatch['groups']['d'] + ":" : "00:") + 
+            ((iraupenaMatch['groups']['h'] !== undefined) ? iraupenaMatch['groups']['h'] + ":" : "00:") +
+            ((iraupenaMatch['groups']['m'] !== undefined) ? iraupenaMatch['groups']['m'] : "00")
 
         var iterazioak = [];
         $("div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > span").each((i, elem) => {
@@ -200,12 +194,18 @@ class Manipulator {
 
 
             if (0 <= mota && mota !== undefined) {
+                let orduaRegEx = /(?<h>[0-9]{1,2}):(?<m>[0-9]{2})/gm
+                
                 var den_hasi = $(elem).find("div.Lp2Gff div.gnWycb div.qbarme").text();
-                den_hasi = moment(den_hasi, "HH:mm a").format("HH:mm");
-
                 var den_bukaera = $(elem).find("div.Lp2Gff div.gnWycb div.o4X11d").text()
                                         + $(elem).find("div.Ni8Gpb span.T1PeR div.lEcnMb.pxLwif").text();
-                den_bukaera = moment(den_bukaera, "HH:mm a").format("HH:mm");
+
+                let hasieraMatch = orduaRegEx.exec(den_bukaera);
+                orduaRegEx.lastIndex = 0;
+                let amaieraMatch = orduaRegEx.exec(den_bukaera);
+
+                den_hasi = hasieraMatch['groups']['h'] + ":" + hasieraMatch['groups']['m']
+                den_bukaera = amaieraMatch['groups']['h'] + ":" + amaieraMatch['groups']['m']
 
                 ibilbideak_data.push({
                     id: i,
@@ -271,16 +271,16 @@ class Manipulator {
 }
 exports.Manipulator = Manipulator;
 
-// const scraper = new Manipulator();
-// // var informazioa = null;
-// const fs = require('fs');
-// // //data = JSON.parse(fs.readFileSync('data.json', 'utf8'));
-// scraper.getBasicData('Bilbo', "Sodupe").then(data => {
-//     fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
-//     // scraper.finish();
-//     scraper.getDetailedDirections(data).then(data => {
-//         // save data to file
-//         fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
-//         scraper.finish();
-//     })
-// })
+const scraper = new Manipulator();
+ // var informazioa = null;
+const fs = require('fs');
+// //data = JSON.parse(fs.readFileSync('data.json', 'utf8'));
+scraper.getBasicData('Bilbo', "Sodupe").then(data => {
+    fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
+    // scraper.finish();
+    scraper.getDetailedDirections(data).then(data => {
+        // save data to file
+        fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
+        scraper.finish();
+    })
+})
