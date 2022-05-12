@@ -2,12 +2,10 @@ const puppeteer = require("puppeteer");
 const fs = require('fs').promises;
 
 class Puppet {
-    browser
-    page
-    headless = true
-    args = []
 
     constructor() {
+        this.headless = true
+        this.args = []
         this.browser = null;
         this.page = null;
     }
