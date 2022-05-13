@@ -21,7 +21,7 @@ class Puppet {
 
         await this.openPreference(pref);
         // Lehenegoa bidaien bidaien panela itxaroten du, bigarrena bidaiarik ez badago agertzen da. Bigarrena atazkatuta ez geratzeko erabiltzen da
-        await this.page.waitForSelector(".etbuEf, #pane > div > div.e07Vkf.kA9KIf > div > div > div.hBX6ld.fontBodyMedium")
+        await this.page.waitForSelector(".etbuEf, .hBX6ld")
         html = await this.page.content();
         await this.closePreferences();
 
@@ -30,33 +30,37 @@ class Puppet {
 
     async getDirectionDetailsHtml(selector) {
         const backSelector = ".ysKsp";
-        // const panel_selector = "#pane > div > div.e07Vkf.kA9KIf > div > div > div.m6QErb";
-
-        // console.log("\tWaiting for panel to appear...")
-        // // wait for the panel to load
-        // await this.page.waitForSelector(panel_selector)
+        const panel_selector = "#pane > div > div.e07Vkf.kA9KIf > div > div > div.m6QErb";
 
         console.log("\tWaiting for selector (" + selector + ") to appear...")
+
         await this.page.waitForSelector(selector)
         await this.page.click(selector)
-
+        
         // Lehenengo aldian bakarrik click bat egin behar da, baina hurrengoak 2
-        try {
-            await this.page.waitForSelector(selector)
+        try{
+            await this.page.waitForSelector(selector, { timeout: 500 })
             await this.page.click(selector)
-        } catch (error) {
-            console.log("\tFirst datails click.")
-        }
+        } catch (e) {
+            console.log("\tFirst click.")
+        } 
         console.log("\tTrip details clicked.")
 
         console.log("\tWaiting for content to appear...")
-        await this.page.waitForSelector("div.m6QErb:nth-child(2)")
+        try{
+            await this.page.waitForSelector("div.m6QErb:nth-child(2)")
+        } catch (error) {
+            console.log("\tContent wait error.")
+        }
         const html = await this.page.content();
 
         console.log("\tWaiting for back selector to appear...")
         await this.page.waitForSelector(backSelector)
         await this.page.click(backSelector)
         console.log("\tTrip details closed.")
+
+        // wait for panel reload
+        await this.page.waitForSelector(".miFGmb > div:nth-child(1), .hBX6ld")
 
         return html;
     }
@@ -85,7 +89,7 @@ class Puppet {
         await this.page.goto(url);
 
         // Lehenegoa bidaien bidaien panela itxaroten du, bigarrena bidaiarik ez badago agertzen da. Bigarrena atazkatuta ez geratzeko erabiltzen da
-        await this.page.waitForSelector("div.m6QErb:nth-child(4), #pane > div > div.e07Vkf.kA9KIf > div > div > div.hBX6ld.fontBodyMedium")
+        await this.page.waitForSelector("div.m6QErb:nth-child(4), .hBX6ld")
 
         // Cookiak lortzeko
         // const cookies = await this.page.cookies();
@@ -96,37 +100,49 @@ class Puppet {
         console.log("-> Preference: " + pref)
         console.log("\tOpening preference.")
         const opt_selector = "button.OcYctc"
-        const bus_selector = ".U8X7Nb > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > label:nth-child(2)"
-        const train_selector = ".U8X7Nb > div:nth-child(1) > div:nth-child(4) > div:nth-child(1) > label:nth-child(2)"
-        const tram_selector = ".U8X7Nb > div:nth-child(1) > div:nth-child(5) > div:nth-child(1) > label:nth-child(2)"
-        const subway_selector = ".U8X7Nb > div:nth-child(1) > div:nth-child(3) > div:nth-child(1) > label:nth-child(2)"
+        const bus_selector = "#transit-vehicle-prefer-0"
+        const train_selector = "#transit-vehicle-prefer-2"
+        const tram_selector = "#transit-vehicle-prefer-3"
+        const subway_selector = "#transit-vehicle-prefer-1"
 
-        // Preferentzia menua itxaron
-        await this.page.waitForSelector("div.MlqQ3d:nth-child(2)")
-
-        await this.page.waitForSelector(opt_selector)
-        await this.page.click(opt_selector)
+        const [response] = await Promise.all([
+            this.page.waitForSelector(opt_selector),
+            this.page.click(opt_selector),
+        ]);
 
         switch (pref) {
             case 'Bus':
-                await this.page.waitForSelector(bus_selector)
-                await this.page.click(bus_selector) 
+                console.log("\tClicking subway selector " + bus_selector)
+                await Promise.all([
+                    this.page.waitForSelector(bus_selector),
+                    this.page.click(bus_selector) 
+                ]);
                 break;
             case 'Train':
-                await this.page.waitForSelector(train_selector)
-                await this.page.click(train_selector)
+                console.log("\tClicking subway selector " + train_selector)
+                await Promise.all([
+                    this.page.waitForSelector(train_selector),
+                    this.page.click(train_selector) 
+                ]);
                 break;
             case 'Tram':
-                await this.page.waitForSelector(tram_selector)
-                await this.page.click(tram_selector)
+                console.log("\tClicking subway selector " + tram_selector)
+                await Promise.all([
+                    this.page.waitForSelector(tram_selector),
+                    this.page.click(tram_selector) 
+                ]);
                 break;
             case 'Subway':
-                await this.page.waitForSelector(subway_selector)
-                await this.page.click(subway_selector)
+                console.log("\tClicking subway selector " + subway_selector)
+                await Promise.all([
+                    this.page.waitForSelector(subway_selector),
+                    this.page.click(subway_selector) 
+                ]);
                 break;
         }
 
-        await this.page.waitForSelector("div.m6QErb:nth-child(1)")
+        // Wait for the page to load, or if there are no results, wait for the error message
+        await this.page.waitForSelector("#section-directions-trip-0, .hBX6ld")
     }
 
     async closePreferences() {  
@@ -174,6 +190,9 @@ class Puppet {
         await this.page.waitForSelector(close_selector)
         await this.page.click(close_selector)
 
+        // wait for panel to reload
+        await this.page.waitForSelector(".miFGmb > div:nth-child(1), div.m6QErb:nth-child(4)")
+
         console.log("\tPreferences closed.")
     }
 
@@ -182,6 +201,3 @@ class Puppet {
     }
 }
 exports.Puppet = Puppet;
-
-// const puppet = new Puppet();
-// puppet.openGoogleMaps('https://www.google.com/');
