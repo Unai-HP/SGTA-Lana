@@ -9,28 +9,28 @@ export function Zutabea(props: any) {
   const [ordenazioa, setOrdenazioa] = useState<ordenMota>();
   const [selectedAukera, setSelectedAukera] = useState<Aukera>();
 
-  return <IonContent className="without-scrollbar">
-    <IonHeader>
-      <h1>
-        {props.hasiera}-tik {props.helmuga}-ra
-      </h1><br />
-      <IonRadioGroup value={ordenazioa} onIonChange={(e) => setOrdenazioa(e.detail.value)}>
-        <IonLabel>Ordenazioa:</IonLabel><br/>
-        <IonLabel>
-          <IonRadio value={ordenMota.lehenaAilegatzeko}/>
-          Lehena
-        </IonLabel>
-        &nbsp;
-        <IonLabel>
-          <IonRadio value={ordenMota.azkarragoa}/>
-          Azkarragoa
-        </IonLabel>
-      </IonRadioGroup>
-    </IonHeader>
-    <IonContent hidden={details}>
+  return <IonContent>
+    <IonContent hidden={details} slot="fixed" style={{position: "bottom"}}>
+      <IonHeader>
+        <h1>
+          {props.hasiera}-tik {props.helmuga}-{'(e)'}ra
+        </h1><br />
+        <IonRadioGroup value={ordenazioa} onIonChange={(e) => setOrdenazioa(e.detail.value)}>
+          <IonLabel>Ordenazioa:</IonLabel><br/>
+          <IonLabel>
+            <IonRadio value={ordenMota.lehenaAilegatzeko}/>
+            Lehena
+          </IonLabel>
+          &nbsp;
+          <IonLabel>
+            <IonRadio value={ordenMota.azkarragoa}/>
+            Azkarragoa
+          </IonLabel>
+        </IonRadioGroup>
+      </IonHeader>
       <AukerenZerrenda setDetails={setDetails} hasiera={props.hasiera} helmuga={props.helmuga} ordenazioa={ordenazioa} setSelectedAukera={setSelectedAukera} />
     </IonContent>
-    <IonContent hidden={!details}>
+    <IonContent hidden={!details} slot="fixed" style={{position: "bottom"}}>
       <Informazioa setDetails={setDetails} selectedAukera={selectedAukera} />
     </IonContent>
   </IonContent>;

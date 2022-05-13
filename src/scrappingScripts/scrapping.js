@@ -111,7 +111,6 @@ class Manipulator {
             iraupena: $("div[class='Fk3sm fontHeadlineSmall']").text(),
         }
 
-        console.log(denbora)
         // // Denborari formatua aldatu
         let iraupenaRegEx = /((?<d>[0-9]{1,2}) (día[s]?|day[s]?))?((?<h>[0-9]{1,2}) (h|hr))?((?<m>[0-9]{1,2}) min)?/gm
         let orduaRegEx = /(?<h>[0-9]{1,2}):(?<m>[0-9]{2}) (?<a>(AM|PM))/gm
@@ -120,8 +119,6 @@ class Manipulator {
         orduaRegEx.lastIndex = 0;
         let amaieraMatch = orduaRegEx.exec(denbora.amaiera);
         let iraupenaMatch = iraupenaRegEx.exec(denbora.iraupena);
-        console.log(denbora.iraupena)
-        console.log(iraupenaMatch)
 
         denbora.hasiera = ampmto24h(hasieraMatch['groups']['h'], hasieraMatch['groups']['a']) + ":" + hasieraMatch['groups']['m']
         denbora.amaiera = ampmto24h(amaieraMatch['groups']['h'], amaieraMatch['groups']['a']) + ":" + amaieraMatch['groups']['m']
@@ -210,8 +207,6 @@ class Manipulator {
                 var den_hasi = $(elem).find("div.Lp2Gff div.gnWycb div.qbarme").text();
                 var den_bukaera = $(elem).find("div.Lp2Gff div.gnWycb div.o4X11d").text()
                                         + $(elem).find("div.Ni8Gpb span.T1PeR div.lEcnMb.pxLwif").text();
-                console.log(den_hasi)
-                console.log(den_bukaera)
                 let hasieraMatch = orduaRegEx.exec(den_hasi);
                 orduaRegEx.lastIndex = 0;
                 let amaieraMatch = orduaRegEx.exec(den_bukaera);

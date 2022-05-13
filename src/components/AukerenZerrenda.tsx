@@ -13,10 +13,11 @@ export function AukerenZerrenda(props: any) {
   const [aukeraData, setAukeraData] = useState<Aukera[]>([]);
 
   useEffect(() => {
-    // Unai sortutako funtzioarekin aldatu
-    // test(props.hasiera, props.helmuga).then(aukerak => {
-    //   setAukeraData(aukerak);
-    // });
+    //Unai sortutako funtzioarekin aldatu
+    /* test(props.hasiera, props.helmuga).then(aukerak => {
+       setAukeraData(aukerak);
+     });
+    */
 	var xhr = new XMLHttpRequest();
 	console.log(props.hasiera);
     $.ajax({
