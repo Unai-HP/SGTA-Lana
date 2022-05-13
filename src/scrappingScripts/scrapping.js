@@ -50,6 +50,9 @@ class Manipulator {
 
         // Preferntzia mota guztiak lortu
         const preferences = [];
+        // save json file
+        const fs = require('fs');
+
         json.forEach(element => {
             if (!preferences.includes(element['pref'])) {
                 preferences.push(element['pref']);
@@ -70,12 +73,12 @@ class Manipulator {
 
             await this.puppet.closePreferences();
         }
+
         console.log("Filtering json files...");
         json = this.fillDirectiontransshipment(json);
         json = this.removeDuplicates(json);
 
-        // save json file
-        const fs = require('fs');
+        
         fs.writeFileSync('data.json', JSON.stringify(json, null, 2));
 
         console.log("Finished getting detailed directions.");
@@ -111,7 +114,6 @@ class Manipulator {
             iraupena: $("div[class='Fk3sm fontHeadlineSmall']").text(),
         }
 
-        console.log(denbora)
         // // Denborari formatua aldatu
         let iraupenaRegEx = /((?<d>[0-9]{1,2}) (día[s]?|day[s]?))?((?<h>[0-9]{1,2}) (h|hr))?((?<m>[0-9]{1,2}) min)?/gm
         let orduaRegEx = /(?<h>[0-9]{1,2}):(?<m>[0-9]{2}) (?<a>(AM|PM))/gm
@@ -120,8 +122,6 @@ class Manipulator {
         orduaRegEx.lastIndex = 0;
         let amaieraMatch = orduaRegEx.exec(denbora.amaiera);
         let iraupenaMatch = iraupenaRegEx.exec(denbora.iraupena);
-        console.log(denbora.iraupena)
-        console.log(iraupenaMatch)
 
         denbora.hasiera = ampmto24h(hasieraMatch['groups']['h'], hasieraMatch['groups']['a']) + ":" + hasieraMatch['groups']['m']
         denbora.amaiera = ampmto24h(amaieraMatch['groups']['h'], amaieraMatch['groups']['a']) + ":" + amaieraMatch['groups']['m']
@@ -210,8 +210,6 @@ class Manipulator {
                 var den_hasi = $(elem).find("div.Lp2Gff div.gnWycb div.qbarme").text();
                 var den_bukaera = $(elem).find("div.Lp2Gff div.gnWycb div.o4X11d").text()
                                         + $(elem).find("div.Ni8Gpb span.T1PeR div.lEcnMb.pxLwif").text();
-                console.log(den_hasi)
-                console.log(den_bukaera)
                 let hasieraMatch = orduaRegEx.exec(den_hasi);
                 orduaRegEx.lastIndex = 0;
                 let amaieraMatch = orduaRegEx.exec(den_bukaera);
@@ -246,13 +244,12 @@ class Manipulator {
      * Transbordoak egotean hauen amaiera lekua ez da etaparen parte, baina hurrengoaren hasiera lekua da.
      **/ 
     fillDirectiontransshipment(json){
-        // Length - 1 pref datua ez artzeko
         for (var garraioa = 0; garraioa < json.length; garraioa++) {
             // ibilbideak lortu
             for (var etapa = 0; etapa < json[garraioa].xehetasunak.ibilbideak.length - 1; etapa++) {
                 // eta etaparen amaiera hurrengoaren hasiera bihurtu, hau hutsa bada.
-                if (json[garraioa].xehetasunak.ibilbideak[etapa].amaiera === "") {
-                    json[garraioa].xehetasunak.ibilbideak[etapa].amaiera = json[garraioa].xehetasunak.ibilbideak[etapa + 1].hasiera;;
+                if (json[garraioa].xehetasunak.ibilbideak[etapa].kokapenak.amaiera === "") {
+                    json[garraioa].xehetasunak.ibilbideak[etapa].kokapenak.amaiera = json[garraioa].xehetasunak.ibilbideak[etapa + 1].hasiera;;
                 }
             }
         }
@@ -283,16 +280,16 @@ class Manipulator {
 }
 exports.Manipulator = Manipulator;
 
-// const scraper = new Manipulator();
-//  // var informazioa = null;
-// const fs = require('fs');
-// // //data = JSON.parse(fs.readFileSync('data.json', 'utf8'));
-// scraper.getBasicData('Bilbo', "Sodupe").then(data => {
-//     fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
-//     // scraper.finish();
-//     scraper.getDetailedDirections(data).then(data => {
-//         // save data to file
-//         fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
-//         scraper.finish();
-//     })
-// })
+const scraper = new Manipulator();
+ // var informazioa = null;
+const fs = require('fs');
+// //data = JSON.parse(fs.readFileSync('data.json', 'utf8'));
+scraper.getBasicData('Bilbo', "Paris").then(data => {
+    fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
+    // scraper.finish();
+    scraper.getDetailedDirections(data).then(data => {
+        // save data to file
+        fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
+        scraper.finish();
+    })
+})
