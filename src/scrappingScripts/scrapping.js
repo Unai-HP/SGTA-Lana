@@ -279,17 +279,3 @@ class Manipulator {
     }
 }
 exports.Manipulator = Manipulator;
-
-const scraper = new Manipulator();
- // var informazioa = null;
-const fs = require('fs');
-// //data = JSON.parse(fs.readFileSync('data.json', 'utf8'));
-scraper.getBasicData('Bilbo', "Paris").then(data => {
-    fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
-    // scraper.finish();
-    scraper.getDetailedDirections(data).then(data => {
-        // save data to file
-        fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
-        scraper.finish();
-    })
-})
