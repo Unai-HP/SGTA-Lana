@@ -50,6 +50,9 @@ class Manipulator {
 
         // Preferntzia mota guztiak lortu
         const preferences = [];
+        // save json file
+        const fs = require('fs');
+
         json.forEach(element => {
             if (!preferences.includes(element['pref'])) {
                 preferences.push(element['pref']);
@@ -70,12 +73,12 @@ class Manipulator {
 
             await this.puppet.closePreferences();
         }
+
         console.log("Filtering json files...");
         json = this.fillDirectiontransshipment(json);
         json = this.removeDuplicates(json);
 
-        // save json file
-        const fs = require('fs');
+        
         fs.writeFileSync('data.json', JSON.stringify(json, null, 2));
 
         console.log("Finished getting detailed directions.");
@@ -241,13 +244,12 @@ class Manipulator {
      * Transbordoak egotean hauen amaiera lekua ez da etaparen parte, baina hurrengoaren hasiera lekua da.
      **/ 
     fillDirectiontransshipment(json){
-        // Length - 1 pref datua ez artzeko
         for (var garraioa = 0; garraioa < json.length; garraioa++) {
             // ibilbideak lortu
             for (var etapa = 0; etapa < json[garraioa].xehetasunak.ibilbideak.length - 1; etapa++) {
                 // eta etaparen amaiera hurrengoaren hasiera bihurtu, hau hutsa bada.
-                if (json[garraioa].xehetasunak.ibilbideak[etapa].amaiera === "") {
-                    json[garraioa].xehetasunak.ibilbideak[etapa].amaiera = json[garraioa].xehetasunak.ibilbideak[etapa + 1].hasiera;;
+                if (json[garraioa].xehetasunak.ibilbideak[etapa].kokapenak.amaiera === "") {
+                    json[garraioa].xehetasunak.ibilbideak[etapa].kokapenak.amaiera = json[garraioa].xehetasunak.ibilbideak[etapa + 1].hasiera;;
                 }
             }
         }
@@ -277,17 +279,3 @@ class Manipulator {
     }
 }
 exports.Manipulator = Manipulator;
-
-// const scraper = new Manipulator();
-//  // var informazioa = null;
-// const fs = require('fs');
-// // //data = JSON.parse(fs.readFileSync('data.json', 'utf8'));
-// scraper.getBasicData('Bilbo', "Sodupe").then(data => {
-//     fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
-//     // scraper.finish();
-//     scraper.getDetailedDirections(data).then(data => {
-//         // save data to file
-//         fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
-//         scraper.finish();
-//     })
-// })
