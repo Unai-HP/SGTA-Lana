@@ -249,7 +249,7 @@ class Manipulator {
             for (var etapa = 0; etapa < json[garraioa].xehetasunak.ibilbideak.length - 1; etapa++) {
                 // eta etaparen amaiera hurrengoaren hasiera bihurtu, hau hutsa bada.
                 if (json[garraioa].xehetasunak.ibilbideak[etapa].kokapenak.amaiera === "") {
-                    json[garraioa].xehetasunak.ibilbideak[etapa].kokapenak.amaiera = json[garraioa].xehetasunak.ibilbideak[etapa + 1].hasiera;;
+                    json[garraioa].xehetasunak.ibilbideak[etapa].kokapenak.amaiera = json[garraioa].xehetasunak.ibilbideak[etapa + 1].kokapenak.hasiera;
                 }
             }
         }
