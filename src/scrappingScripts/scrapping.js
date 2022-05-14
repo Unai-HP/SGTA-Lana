@@ -115,7 +115,7 @@ class Manipulator {
         }
 
         // // Denborari formatua aldatu
-        let iraupenaRegEx = /((?<d>[0-9]{1,2}) (día[s]?|day[s]?))?((?<h>[0-9]{1,2}) (h|hr))?((?<m>[0-9]{1,2}) min)?/gm
+        let iraupenaRegEx = /^((?<d>[0-9]{1,2}) day[s]?)?[ ]?((?<h>[0-9]{1,2}) hr)?[ ]?((?<m>[0-9]{1,2}) min)?$/gm;
         let orduaRegEx = /(?<h>[0-9]{1,2}):(?<m>[0-9]{2}) (?<a>(AM|PM))/gm
 
         let hasieraMatch = orduaRegEx.exec(denbora.hasiera);
@@ -125,9 +125,9 @@ class Manipulator {
 
         denbora.hasiera = ampmto24h(hasieraMatch['groups']['h'], hasieraMatch['groups']['a']) + ":" + hasieraMatch['groups']['m']
         denbora.amaiera = ampmto24h(amaieraMatch['groups']['h'], amaieraMatch['groups']['a']) + ":" + amaieraMatch['groups']['m']
-        denbora.iraupena = ((iraupenaMatch['groups']['d'] !== undefined) ? iraupenaMatch['groups']['d'] + ":" : "00:") + 
-            ((iraupenaMatch['groups']['h'] !== undefined) ? iraupenaMatch['groups']['h'] + ":" : "00:") +
-            ((iraupenaMatch['groups']['m'] !== undefined) ? iraupenaMatch['groups']['m'] : "00")
+        denbora.iraupena = ((iraupenaMatch['groups']['d'] !== undefined) ? ((iraupenaMatch['groups']['d'].length === 1?'0':'')+iraupenaMatch['groups']['d'] + ":") : "00:") + 
+        ((iraupenaMatch['groups']['h'] !== undefined) ? (iraupenaMatch['groups']['h'].length === 1?'0':'')+iraupenaMatch['groups']['h'] + ":" : "00:") +
+        ((iraupenaMatch['groups']['m'] !== undefined) ? (iraupenaMatch['groups']['m'].length === 1?'0':'')+iraupenaMatch['groups']['m'] : "00")
 
         var iterazioak = [];
         $("div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > span").each((i, elem) => {
