@@ -13,7 +13,7 @@ export function Zutabea(props: any) {
     <IonContent hidden={details} slot="fixed" style={{position: "bottom"}}>
       <IonHeader>
         <h1>
-          {props.hasiera}-tik {props.helmuga}-{'(e)'}ra
+          {props.hasiera}-{'(e)'}tik {props.helmuga}-{'(e)'}ra
         </h1><br />
         <IonRadioGroup value={ordenazioa} onIonChange={(e) => setOrdenazioa(e.detail.value)}>
           <IonLabel>Ordenazioa:</IonLabel><br/>

@@ -13,26 +13,26 @@ export function AukerenZerrenda(props: any) {
   const [aukeraData, setAukeraData] = useState<Aukera[]>([]);
 
   useEffect(() => {
-    //Unai sortutako funtzioarekin aldatu
     /* test(props.hasiera, props.helmuga).then(aukerak => {
-       setAukeraData(aukerak);
-     });
-    */
-	var xhr = new XMLHttpRequest();
-	console.log(props.hasiera);
+      setAukeraData(aukerak);
+    }); */
+
+
+    var xhr = new XMLHttpRequest();
+    console.log(props.hasiera);
     $.ajax({
-	  async: true,
-      url: 'http://localhost:8080/FullData?origin='+props.hasiera+'&destination='+props.helmuga,
+      async: true,
+      url: 'http://localhost:8080/FullData?origin='+encodeURIComponent(props.hasiera)+'&destination='+encodeURIComponent(props.helmuga),
       contentType: 'json',
-	  xhr: function() {
-		return xhr;
-	  },
-	  success: function() {
-		let erantzuna = JSON.parse(xhr.response);
-		console.log(erantzuna);
-		setAukeraData(erantzuna);
-	  }
-	})
+      xhr: function() {
+        return xhr;
+      },
+      success: function() {
+        let erantzuna = JSON.parse(xhr.response);
+        console.log(erantzuna);
+        setAukeraData(erantzuna);
+      }
+  	})
   }, []);
 
   function aukerakOrdenatu() {
