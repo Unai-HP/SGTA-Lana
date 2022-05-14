@@ -14,6 +14,9 @@ class Puppet {
     // Html getters
 
     async getPreferencedDirectionsHtml(pref, url = '') {
+        const directions_selector = "#section-directions-trip-0"
+        const no_direction_selector = ".hBX6ld"
+
         let html = '';
         if (url !== '') {
             await this.openGoogleMaps(url);
@@ -21,7 +24,12 @@ class Puppet {
 
         await this.openPreference(pref);
         // Lehenegoa bidaien bidaien panela itxaroten du, bigarrena bidaiarik ez badago agertzen da. Bigarrena atazkatuta ez geratzeko erabiltzen da
-        await this.page.waitForSelector(".etbuEf, .hBX6ld")
+        await Promise.race([
+            this.page.waitForSelector(directions_selector, {visible: true}), 
+            this.page.waitForSelector(no_direction_selector)
+        ])
+        // Beheko zatia kargatzea itxaron ere. Denbora gehiago ematen dio.
+        await this.page.waitForSelector(".etbuEf, .hBX6ld", {visible: true})
         html = await this.page.content();
         await this.closePreferences();
 
@@ -30,16 +38,21 @@ class Puppet {
 
     async getDirectionDetailsHtml(selector) {
         const backSelector = ".ysKsp";
-        const panel_selector = "#pane > div > div.e07Vkf.kA9KIf > div > div > div.m6QErb";
+        const panel_selector = "#section-directions-trip-0"
+        const lower_side_selector = ".dH9bXe";
 
         console.log("\tWaiting for selector (" + selector + ") to appear...")
 
-        await this.page.waitForSelector(selector)
-        await this.page.click(selector)
+        //await this.page.waitForTimeout(1000);
+        await this.page.waitForSelector(panel_selector, { visible: true })
+        .then( async () => await this.page.waitForSelector(lower_side_selector, { visible: true }))
+        .then( async () => await this.page.waitForSelector(selector), { visible: true })
+        .then( async () => await this.page.click(selector) )
         
         // Lehenengo aldian bakarrik click bat egin behar da, baina hurrengoak 2
         try{
-            await this.page.waitForSelector(selector, { timeout: 500 })
+            console.log("\tWaiting for a second click...")
+            await this.page.waitForSelector(selector, { timeout: 1000 })
             await this.page.click(selector)
         } catch (e) {
             console.log("\tFirst click.")

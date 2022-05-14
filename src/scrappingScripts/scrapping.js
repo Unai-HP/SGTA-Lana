@@ -166,7 +166,7 @@ class Manipulator {
 
             const informazioa = $("div.tUEI8e > span:nth-child(1)").text();
             // $('.M3pmwc').html() menuaren informazioa lortzeko
-            const ibilbideak = await this.extractEtapakData($('.M3pmwc').html());
+            const ibilbideak = this.extractEtapakData($('.M3pmwc').html());
 
             return {
                 informazioa: informazioa,
@@ -178,7 +178,7 @@ class Manipulator {
         }
     }
 
-    async extractEtapakData(ibilbideak_html) {
+    extractEtapakData(ibilbideak_html) {
         const $ = cheerio.load(ibilbideak_html);
         const ibilbideak_data = [];
 

@@ -1,0 +1,82 @@
+[
+  {
+    "id": "f1df94ad15842",
+    "pref": "Bus",
+    "iterazioak": [
+      {
+        "img": "Bus",
+        "text": "A0651"
+      }
+    ],
+    "denbora": {
+      "hasiera": "14:07",
+      "amaiera": "14:35",
+      "iraupena": "00:00:28"
+    },
+    "xehetasunak": "#section-directions-trip-0"
+  },
+  {
+    "id": "50f33f53824c3",
+    "pref": "Bus",
+    "iterazioak": [
+      {
+        "img": "Bus",
+        "text": "A3341"
+      }
+    ],
+    "denbora": {
+      "hasiera": "14:17",
+      "amaiera": "15:00",
+      "iraupena": "00:00:43"
+    },
+    "xehetasunak": "#section-directions-trip-1"
+  },
+  {
+    "id": "1fe2338d877791",
+    "pref": "Train",
+    "iterazioak": [
+      {
+        "img": "Train",
+        "text": "Bilbao-Balmaseda"
+      }
+    ],
+    "denbora": {
+      "hasiera": "14:17",
+      "amaiera": "14:51",
+      "iraupena": "00:00:34"
+    },
+    "xehetasunak": "#section-directions-trip-0"
+  },
+  {
+    "id": "0711e01f35687a",
+    "pref": "Tram",
+    "iterazioak": [
+      {
+        "img": "Bus",
+        "text": "A3341"
+      }
+    ],
+    "denbora": {
+      "hasiera": "14:16",
+      "amaiera": "15:00",
+      "iraupena": "00:00:44"
+    },
+    "xehetasunak": "#section-directions-trip-2"
+  },
+  {
+    "id": "24a05830e000e8",
+    "pref": "Tram",
+    "iterazioak": [
+      {
+        "img": "Bus",
+        "text": "A3342"
+      }
+    ],
+    "denbora": {
+      "hasiera": "14:55",
+      "amaiera": "15:30",
+      "iraupena": "00:00:35"
+    },
+    "xehetasunak": "#section-directions-trip-3"
+  }
+]
