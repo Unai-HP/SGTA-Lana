@@ -4,7 +4,7 @@ const fs = require('fs').promises;
 class Puppet {
 
     constructor() {
-        this.headless = true
+        this.headless = false
         this.args = []
         this.browser = null;
         this.page = null;
@@ -26,7 +26,7 @@ class Puppet {
         // Lehenegoa bidaien bidaien panela itxaroten du, bigarrena bidaiarik ez badago agertzen da. Bigarrena atazkatuta ez geratzeko erabiltzen da
         await Promise.race([
             this.page.waitForSelector(directions_selector, {visible: true}), 
-            this.page.waitForSelector(no_direction_selector)
+            this.page.waitForSelector(no_direction_selector, {visible: true})
         ])
         // Beheko zatia kargatzea itxaron ere. Denbora gehiago ematen dio.
         await this.page.waitForSelector(".etbuEf, .hBX6ld", {visible: true})
@@ -43,7 +43,6 @@ class Puppet {
 
         console.log("\tWaiting for selector (" + selector + ") to appear...")
 
-        //await this.page.waitForTimeout(1000);
         await this.page.waitForSelector(panel_selector, { visible: true })
         .then( async () => await this.page.waitForSelector(lower_side_selector, { visible: true }))
         .then( async () => await this.page.waitForSelector(selector), { visible: true })
@@ -52,7 +51,7 @@ class Puppet {
         // Lehenengo aldian bakarrik click bat egin behar da, baina hurrengoak 2
         try{
             console.log("\tWaiting for a second click...")
-            await this.page.waitForSelector(selector, { timeout: 1000 })
+            await this.page.waitForSelector(selector + ", .PNEhTd", {visible: true })
             await this.page.click(selector)
         } catch (e) {
             console.log("\tFirst click.")
@@ -61,14 +60,14 @@ class Puppet {
 
         console.log("\tWaiting for content to appear...")
         try{
-            await this.page.waitForSelector("div.m6QErb:nth-child(2)")
+            await this.page.waitForSelector("div.m6QErb:nth-child(2)", {visible: true })
         } catch (error) {
             console.log("\tContent wait error.")
         }
         const html = await this.page.content();
 
         console.log("\tWaiting for back selector to appear...")
-        await this.page.waitForSelector(backSelector)
+        await this.page.waitForSelector(backSelector, { visible: true })
         await this.page.click(backSelector)
         console.log("\tTrip details closed.")
 
@@ -119,7 +118,7 @@ class Puppet {
         const subway_selector = "#transit-vehicle-prefer-1"
 
         const [response] = await Promise.all([
-            this.page.waitForSelector(opt_selector),
+            this.page.waitForSelector(opt_selector, { visible: true }),
             this.page.click(opt_selector),
         ]);
 
@@ -127,28 +126,28 @@ class Puppet {
             case 'Bus':
                 console.log("\tClicking subway selector " + bus_selector)
                 await Promise.all([
-                    this.page.waitForSelector(bus_selector),
+                    this.page.waitForSelector(bus_selector, { visible: true }),
                     this.page.click(bus_selector) 
                 ]);
                 break;
             case 'Train':
                 console.log("\tClicking subway selector " + train_selector)
                 await Promise.all([
-                    this.page.waitForSelector(train_selector),
+                    this.page.waitForSelector(train_selector, { visible: true }),
                     this.page.click(train_selector) 
                 ]);
                 break;
             case 'Tram':
                 console.log("\tClicking subway selector " + tram_selector)
                 await Promise.all([
-                    this.page.waitForSelector(tram_selector),
+                    this.page.waitForSelector(tram_selector, { visible: true }),
                     this.page.click(tram_selector) 
                 ]);
                 break;
             case 'Subway':
                 console.log("\tClicking subway selector " + subway_selector)
                 await Promise.all([
-                    this.page.waitForSelector(subway_selector),
+                    this.page.waitForSelector(subway_selector, { visible: true }),
                     this.page.click(subway_selector) 
                 ]);
                 break;
@@ -175,36 +174,36 @@ class Puppet {
         }
         
 
-        await this.page.waitForSelector(bus_selector)
+        await this.page.waitForSelector(bus_selector, { visible: true })
         if (await this.page.$eval(bus_selector, el => el.checked)) {
-            await this.page.waitForSelector(bus_selector)
+            await this.page.waitForSelector(bus_selector, { visible: true })
             await this.page.click(bus_selector)
         }
 
-        await this.page.waitForSelector(train_selector)
+        await this.page.waitForSelector(train_selector, { visible: true })
         if (await this.page.$eval(train_selector, el => el.checked)) {
-            await this.page.waitForSelector(train_selector)
+            await this.page.waitForSelector(train_selector, { visible: true })
             await this.page.click(train_selector)
         }
 
-        await this.page.waitForSelector(tram_selector)
+        await this.page.waitForSelector(tram_selector, { visible: true })
         if (await this.page.$eval(tram_selector, el => el.checked)) {
-            await this.page.waitForSelector(tram_selector)
+            await this.page.waitForSelector(tram_selector, { visible: true })
             await this.page.click(tram_selector)
         }
 
-        await this.page.waitForSelector(subway_selector)
+        await this.page.waitForSelector(subway_selector, { visible: true })
         if (await this.page.$eval(subway_selector, el => el.checked)) {
-            await this.page.waitForSelector(subway_selector)
+            await this.page.waitForSelector(subway_selector, { visible: true })
             await this.page.click(subway_selector)
         }
 
         // close preferences
-        await this.page.waitForSelector(close_selector)
+        await this.page.waitForSelector(close_selector, { visible: true })
         await this.page.click(close_selector)
 
         // wait for panel to reload
-        await this.page.waitForSelector(".miFGmb > div:nth-child(1), div.m6QErb:nth-child(4)")
+        await this.page.waitForSelector(".miFGmb > div:nth-child(1), div.m6QErb:nth-child(4)", {visible: true })
 
         console.log("\tPreferences closed.")
     }

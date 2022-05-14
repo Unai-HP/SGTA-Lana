@@ -9,12 +9,12 @@ async function run(){
         // //data = JSON.parse(fs.readFileSync('data.json', 'utf8'));
         await scraper.getBasicData('Sodupe', "Bilbo").then(async data => {
             fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
-            // scraper.finish();
-            await scraper.getDetailedDirections(data).then(data => {
-                // save data to file
-                fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
-                scraper.finish();
-            })
+            scraper.finish();
+            // await scraper.getDetailedDirections(data).then(data => {
+            //     // save data to file
+            //     fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
+            //     scraper.finish();
+            // })
         }) 
     }
 }
