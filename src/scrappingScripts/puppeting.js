@@ -40,30 +40,33 @@ class Puppet {
         const backSelector = ".ysKsp";
         const panel_selector = "#section-directions-trip-0"
         const lower_side_selector = ".dH9bXe";
-
-        console.log("\tWaiting for selector (" + selector + ") to appear...")
-
-        await this.page.waitForSelector(panel_selector, { visible: true })
-        .then( async () => await this.page.waitForSelector(lower_side_selector, { visible: true }))
-        .then( async () => await this.page.waitForSelector(selector), { visible: true })
-        .then( async () => await this.page.click(selector) )
         
-        // Lehenengo aldian bakarrik click bat egin behar da, baina hurrengoak 2
-        try{
-            console.log("\tWaiting for a second click...")
-            await this.page.waitForSelector(selector+" > div:nth-child(2) > div:nth-child(2) > div:nth-child(5) > button:nth-child(1)", { visible: true })
-            await this.page.click(selector+" > div:nth-child(2) > div:nth-child(2) > div:nth-child(5) > button:nth-child(1)")
-        } catch (e) {
-            console.log("\tFirst click.")
-        } 
+        await this.page.waitForSelector(panel_selector, {visible: true})
+        await this.page.waitForSelector(lower_side_selector, {visible: true})
+
+        // Itxaron direkzioak kargatu harte
+        console.log("\tWaiting for "+selector+" to appear..")
+        while (await this.page.$(selector, {visible: true}) === null){
+            await this.page.waitForTimeout(50);
+        }
+        
+        console.log("\tDirections loaded, now clicking selector "+selector+"...")
+        while (await this.page.$(selector, {visible: true}) !== null) {
+            try {
+                await this.page.click(selector)
+                console.log("\tDirections clicked.")
+            } catch (error) {
+                console.log("\t"+error)
+            }
+            await this.page.waitForTimeout(250)
+        }
+        
+        
         console.log("\tTrip details clicked.")
 
         console.log("\tWaiting for content to appear...")
-        try{
-            await this.page.waitForSelector("div.m6QErb:nth-child(2)", {visible: true })
-        } catch (error) {
-            console.log("\tContent wait error.")
-        }
+    
+        await this.page.waitForSelector("div.m6QErb:nth-child(2)", {visible: true })
         const html = await this.page.content();
 
         console.log("\tWaiting for back selector to appear...")
@@ -124,39 +127,61 @@ class Puppet {
 
         await this.page.waitForSelector("div.MlqQ3d:nth-child(2)", { visible: true })
         .then( async () => await this.page.waitForSelector(".OcYctc", { visible: true }))
+        var clicked = false
         switch (pref) {
             case 'Bus':
                 console.log("\tClicking subway selector " + bus_selector)
-                await Promise.all([
-                    this.page.waitForSelector(bus_selector, { visible: true }),
-                    this.page.click(bus_selector) 
-                ]);
+                await this.page.waitForSelector(bus_selector, { visible: true })
+                while (!clicked) {
+                    try {
+                        await this.page.click(bus_selector)
+                        clicked = true
+                    } catch (error) {
+                        console.log("\tError clicking bus selector.")
+                    }
+                }
                 break;
             case 'Train':
                 console.log("\tClicking subway selector " + train_selector)
-                await Promise.all([
-                    this.page.waitForSelector(train_selector, { visible: true }),
-                    this.page.click(train_selector) 
-                ]);
+                await this.page.waitForSelector(train_selector, { visible: true })
+                while (!clicked) {
+                    try {
+                        await this.page.click(train_selector)
+                        clicked = true
+                    } catch (error) {
+                        console.log("\tError clicking bus selector.")
+                    }
+                }
                 break;
             case 'Tram':
                 console.log("\tClicking subway selector " + tram_selector)
-                await Promise.all([
-                    this.page.waitForSelector(tram_selector, { visible: true }),
-                    this.page.click(tram_selector) 
-                ]);
+                await this.page.waitForSelector(tram_selector, { visible: true })
+                while (!clicked) {
+                    try {
+                        await this.page.click(tram_selector)
+                        clicked = true
+                    } catch (error) {
+                        console.log("\tError clicking bus selector.")
+                    }
+                }
                 break;
             case 'Subway':
                 console.log("\tClicking subway selector " + subway_selector)
-                await Promise.all([
-                    this.page.waitForSelector(subway_selector, { visible: true }),
-                    this.page.click(subway_selector) 
-                ]);
+                await this.page.waitForSelector(subway_selector, { visible: true })
+                while (!clicked) {
+                    try {
+                        await this.page.click(subway_selector)
+                        clicked = true
+                    } catch (error) {
+                        console.log("\tError clicking bus selector.")
+                    }
+                }
                 break;
         }
 
         // Wait for the page to load, or if there are no results, wait for the error message
-        await this.page.waitForSelector("#section-directions-trip-0, .hBX6ld")
+        await this.page.waitForSelector("#section-directions-trip-0, .hBX6ld", { visible: true })
+        await this.page.waitForSelector(".dH9bXe, .hBX6ld", { visible: true })
     }
 
     async closePreferences() {  
