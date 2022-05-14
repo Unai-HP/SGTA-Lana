@@ -51,8 +51,8 @@ class Puppet {
         // Lehenengo aldian bakarrik click bat egin behar da, baina hurrengoak 2
         try{
             console.log("\tWaiting for a second click...")
-            await this.page.waitForSelector(selector + ", .PNEhTd", {visible: true })
-            await this.page.click(selector)
+            await this.page.waitForSelector(selector+" > div:nth-child(2) > div:nth-child(2) > div:nth-child(5) > button:nth-child(1)", { visible: true })
+            await this.page.click(selector+" > div:nth-child(2) > div:nth-child(2) > div:nth-child(5) > button:nth-child(1)")
         } catch (e) {
             console.log("\tFirst click.")
         } 
@@ -122,6 +122,8 @@ class Puppet {
             this.page.click(opt_selector),
         ]);
 
+        await this.page.waitForSelector("div.MlqQ3d:nth-child(2)", { visible: true })
+        .then( async () => await this.page.waitForSelector(".OcYctc", { visible: true }))
         switch (pref) {
             case 'Bus':
                 console.log("\tClicking subway selector " + bus_selector)
