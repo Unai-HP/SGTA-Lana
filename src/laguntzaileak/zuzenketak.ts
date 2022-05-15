@@ -12,5 +12,12 @@ export const lekuak = [
                 "lat": 43.2133491, 
                 "lng": -3.1300198
             }
+        },
+        {
+            "izena": "Bentak",
+            "koord": {
+                "lat": 43.3303408,
+                "lng": -1.8167125
+            }
         }
     ]
