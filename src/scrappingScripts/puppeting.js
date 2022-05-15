@@ -46,12 +46,10 @@ class Puppet {
 
         // Itxaron direkzioak kargatu harte
         console.log("\tWaiting for "+selector+" to appear..")
-        while (await this.page.$(selector, {visible: true}) === null){
-            await this.page.waitForTimeout(50);
-        }
+        await this.page.waitForSelector(selector, {visible: true})
         
         console.log("\tDirections loaded, now clicking selector "+selector+"...")
-        while (await this.page.$(selector, {visible: true}) !== null) {
+        do {
             try {
                 await this.page.click(selector)
                 console.log("\tDirections clicked.")
@@ -59,7 +57,7 @@ class Puppet {
                 console.log("\t"+error)
             }
             await this.page.waitForTimeout(250)
-        }
+        } while (await this.page.$(selector, {visible: true}) !== null)
         
         
         console.log("\tTrip details clicked.")
@@ -120,19 +118,31 @@ class Puppet {
         const tram_selector = "#transit-vehicle-prefer-3"
         const subway_selector = "#transit-vehicle-prefer-1"
 
-        const [response] = await Promise.all([
-            this.page.waitForSelector(opt_selector, { visible: true }),
-            this.page.click(opt_selector),
-        ]);
+        // const [response] = await Promise.all([
+        //     this.page.waitForSelector(opt_selector, { visible: true }),
+        //     this.page.click(opt_selector),
+        // ]);
+
+        console.log("\tWaiting for preference selector to appear...")
+        var clicked = false
+        while (!clicked) {
+            try {
+                await this.page.click(opt_selector)
+                clicked = true
+                console.log("\tPreference selector clicked.")
+            } catch (error) {
+                console.log("\tError clicking bus selector.")
+            }
+            await this.page.waitForTimeout(250)
+        }
+        
 
         await this.page.waitForSelector("div.MlqQ3d:nth-child(2)", { visible: true })
         .then( async () => await this.page.waitForSelector(".OcYctc", { visible: true }))
-        var clicked = false
         switch (pref) {
             case 'Bus':
                 console.log("\tClicking subway selector " + bus_selector)
-                await this.page.waitForSelector(bus_selector, { visible: true })
-                while (!clicked) {
+                while (await this.page.$eval(bus_selector, s => s.checked === false)) {
                     try {
                         await this.page.click(bus_selector)
                         clicked = true
@@ -143,37 +153,34 @@ class Puppet {
                 break;
             case 'Train':
                 console.log("\tClicking subway selector " + train_selector)
-                await this.page.waitForSelector(train_selector, { visible: true })
-                while (!clicked) {
+                while (await this.page.$eval(train_selector, s => s.checked === false)) {
                     try {
                         await this.page.click(train_selector)
                         clicked = true
                     } catch (error) {
-                        console.log("\tError clicking bus selector.")
+                        console.log("\tError clicking train selector.")
                     }
                 }
                 break;
             case 'Tram':
                 console.log("\tClicking subway selector " + tram_selector)
-                await this.page.waitForSelector(tram_selector, { visible: true })
-                while (!clicked) {
+                while (await this.page.$eval(tram_selector, s => s.checked === false)) {
                     try {
                         await this.page.click(tram_selector)
                         clicked = true
                     } catch (error) {
-                        console.log("\tError clicking bus selector.")
+                        console.log("\tError clicking tram selector.")
                     }
                 }
                 break;
             case 'Subway':
                 console.log("\tClicking subway selector " + subway_selector)
-                await this.page.waitForSelector(subway_selector, { visible: true })
-                while (!clicked) {
+                while (await this.page.$eval(subway_selector, s => s.checked === false)) {
                     try {
                         await this.page.click(subway_selector)
                         clicked = true
                     } catch (error) {
-                        console.log("\tError clicking bus selector.")
+                        console.log("\tError clicking subway selector.")
                     }
                 }
                 break;
@@ -195,6 +202,7 @@ class Puppet {
 
         
         try {
+            await this.page.waitForSelector(opt_selector, { visible: true, timeout: 5000 })
             await this.page.click(opt_selector)
         } catch (error) {
             console.log("\tPreferentziak berriro irekiak.")
