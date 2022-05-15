@@ -4,7 +4,7 @@ const fs = require('fs').promises;
 class Puppet {
 
     constructor() {
-        this.headless = false
+        this.headless = true
         this.args = []
         this.browser = null;
         this.page = null;
@@ -200,12 +200,12 @@ class Puppet {
         const opt_selector = ".OcYctc > span:nth-child(1)"
         const close_selector = ".OcYctc"
 
-        
-        try {
+        // Details klikatzean "option eremua itxi egiten da beraz kasu honetan berriro ireki beharko dugu"
+        while(await this.page.$(".OcYctc > span:nth-child(2)[style='']") === null) {
+            console.log("\tOpening options tab again...")
             await this.page.waitForSelector(opt_selector, { visible: true, timeout: 5000 })
             await this.page.click(opt_selector)
-        } catch (error) {
-            console.log("\tPreferentziak berriro irekiak.")
+            await this.page.waitForTimeout(250)
         }
         
 
