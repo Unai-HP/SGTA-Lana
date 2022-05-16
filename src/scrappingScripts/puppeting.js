@@ -5,7 +5,7 @@ class Puppet {
 
     constructor() {
         this.headless = true
-        this.args = []
+        this.args = ["--no-sandbox", "--disable-dev-shm-usage"]
         this.browser = null;
         this.page = null;
     }
@@ -97,7 +97,7 @@ class Puppet {
         const cookiesString = await fs.readFile('./cookies.json');
         const cookies = JSON.parse(cookiesString);
 
-        this.browser = await puppeteer.launch({ headless: this.headless, env: { LANGUAGE: "en_US" } });
+        this.browser = await puppeteer.launch({ headless: this.headless, env: { LANGUAGE: "en_US" }, args: this.args, ignoreDefaultArgs: ['--disable-extensions'] });
         this.page = await this.browser.newPage();
         await this.page.goto(url);
 
