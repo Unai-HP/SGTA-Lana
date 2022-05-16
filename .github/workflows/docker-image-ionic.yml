@@ -1,4 +1,4 @@
-name: Publish Node Image
+name: Publish Ionic Image
 
 on:
   workflow_dispatch: 
