@@ -84,6 +84,32 @@ class Manipulator {
         return json;
     }
 
+    /**
+     * Garraio baten details-ak lortu.
+     * @param {json} garraioa - Garraio baten json-a, details gabe, selectorra bakarrik.
+     * @returns {json} garraioa - Garraio baten json-a, details-ekin.
+    */
+     async getGarraioaDetails(garraioa) {
+        // String-a bada details-ak kargatu ez direla esan nahi du.
+        //try{
+            console.log("-> Getting details...");
+
+            const details_html = await this.puppet.getDirectionDetailsHtml(garraioa.xehetasunak);
+            const $ = cheerio.load(details_html);
+
+            const informazioa = $("div.tUEI8e > span:nth-child(1)").text();
+            // $('.M3pmwc').html() menuaren informazioa lortzeko
+            const ibilbideak = this.extractEtapakData($('.M3pmwc').html());
+
+            return {
+                informazioa: informazioa,
+                ibilbideak: ibilbideak
+            };
+        // }catch(e){
+        //     return garraioa.xehetasunak
+        // }
+    }
+
     //---------------------------------------------------------------------------------------------------------------------
     // Scrapping methods
 
@@ -149,32 +175,6 @@ class Manipulator {
                 xehetasunak: details_selector
         }
         return data;
-    }
-
-    /**
-     * Garraio baten details-ak lortu.
-     * @param {json} garraioa - Garraio baten json-a, details gabe, selectorra bakarrik.
-     * @returns {json} garraioa - Garraio baten json-a, details-ekin.
-    */
-    async getGarraioaDetails(garraioa) {
-        // String-a bada details-ak kargatu ez direla esan nahi du.
-        if (typeof garraioa.xehetasunak === "string") {
-            console.log("-> Getting details...");
-            const details_html = await this.puppet.getDirectionDetailsHtml(garraioa.xehetasunak);
-            const $ = cheerio.load(details_html);
-
-            const informazioa = $("div.tUEI8e > span:nth-child(1)").text();
-            // $('.M3pmwc').html() menuaren informazioa lortzeko
-            const ibilbideak = this.extractEtapakData($('.M3pmwc').html());
-
-            return {
-                informazioa: informazioa,
-                ibilbideak: ibilbideak
-            };
-
-        } else {
-            return garraioa.xehetasunak;
-        }
     }
 
     extractEtapakData(ibilbideak_html) {
@@ -245,10 +245,12 @@ class Manipulator {
     fillDirectiontransshipment(json){
         for (var garraioa = 0; garraioa < json.length; garraioa++) {
             // ibilbideak lortu
-            for (var etapa = 0; etapa < json[garraioa].xehetasunak.ibilbideak.length - 1; etapa++) {
-                // eta etaparen amaiera hurrengoaren hasiera bihurtu, hau hutsa bada.
-                if (json[garraioa].xehetasunak.ibilbideak[etapa].kokapenak.amaiera === "") {
-                    json[garraioa].xehetasunak.ibilbideak[etapa].kokapenak.amaiera = json[garraioa].xehetasunak.ibilbideak[etapa + 1].kokapenak.hasiera;
+            if(Array.isArray(json[garraioa].ibilbideak)){
+                for (var etapa = 0; etapa < json[garraioa].xehetasunak.ibilbideak.length - 1; etapa++) {
+                    // eta etaparen amaiera hurrengoaren hasiera bihurtu, hau hutsa bada.
+                    if (json[garraioa].xehetasunak.ibilbideak[etapa].kokapenak.amaiera === "") {
+                        json[garraioa].xehetasunak.ibilbideak[etapa].kokapenak.amaiera = json[garraioa].xehetasunak.ibilbideak[etapa + 1].kokapenak.hasiera;
+                    }
                 }
             }
         }
