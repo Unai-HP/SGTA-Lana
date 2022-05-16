@@ -4,7 +4,7 @@ const fs = require('fs').promises;
 class Puppet {
 
     constructor() {
-        this.headless = true
+        this.headless = false
         this.args = ["--no-sandbox", "--disable-dev-shm-usage"]
         this.browser = null;
         this.page = null;
@@ -124,15 +124,11 @@ class Puppet {
         // ]);
 
         console.log("\tWaiting for preference selector to appear...")
-        var clicked = false
-        while (!clicked) {
-            try {
-                await this.page.click(opt_selector)
-                clicked = true
-                console.log("\tPreference selector clicked.")
-            } catch (error) {
-                console.log("\tError clicking bus selector.")
-            }
+        // Details klikatzean "option eremua itxi egiten da beraz kasu honetan berriro ireki beharko dugu"
+        while(await this.page.$(".OcYctc > span:nth-child(2)[style='']") === null) {
+            console.log("\tOpening options tab again...")
+            await this.page.waitForSelector(opt_selector, { visible: true, timeout: 5000 })
+            await this.page.click(opt_selector)
             await this.page.waitForTimeout(250)
         }
         
@@ -198,7 +194,9 @@ class Puppet {
         const tram_selector = "#transit-vehicle-prefer-3"
         const subway_selector = "#transit-vehicle-prefer-1"
         const opt_selector = ".OcYctc > span:nth-child(1)"
-        const close_selector = ".OcYctc"
+        const close_selector = ".OcYctc > span:nth-child(2)"
+
+        await this.page.waitForSelector(".OcYctc", { visible: true })
 
         // Details klikatzean "option eremua itxi egiten da beraz kasu honetan berriro ireki beharko dugu"
         while(await this.page.$(".OcYctc > span:nth-child(2)[style='']") === null) {
