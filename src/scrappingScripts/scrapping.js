@@ -1,6 +1,7 @@
 const cheerio = require("cheerio");
 const Math = require("mathjs");
 const { Puppet } = require("./puppeting");
+const { PuppetBrowser } = require("./puppetingBrowser");
 
 function ampmto24h(h, a) {
     h = parseInt(h)
@@ -14,7 +15,7 @@ function ampmto24h(h, a) {
 
 class Manipulator {
     constructor() {
-        this.puppet = new Puppet();
+        this.puppet = new PuppetBrowser();
     }
 
     //---------------------------------------------------------------------------------------------------------------------

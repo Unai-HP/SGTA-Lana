@@ -1,13 +1,9 @@
 const puppeteer = require("puppeteer");
 const fs = require('fs').promises;
 
-class Puppet {
-
-    constructor() {
-        this.headless = false
-        this.args = ["--no-sandbox", "--disable-dev-shm-usage"]
-        this.browser = null;
-        this.page = null;
+class PuppetPage {
+    constructor(page) {
+        this.page = page;
     }
 
     //-----------------------------------------------------
@@ -78,31 +74,6 @@ class Puppet {
 
     //-----------------------------------------------------
     // Navigation methods
-
-    async getAllPreferenceDirections(url) {
-        await this.openGoogleMaps(url);
-        var htmls = {
-            Bus: await this.getPreferencedDirectionsHtml('Bus'),
-            Train: await this.getPreferencedDirectionsHtml('Train'),
-            Tram: await this.getPreferencedDirectionsHtml('Tram'),
-            Subway: await this.getPreferencedDirectionsHtml('Subway')
-        }
-
-        return htmls;
-    }
-
-    async openGoogleMaps(url) {
-        this.browser = await puppeteer.launch({ headless: this.headless, env: { LANGUAGE: "en_US" }, args: this.args, ignoreDefaultArgs: ['--disable-extensions'] });
-        this.page = await this.browser.newPage();
-        await this.page.goto(url);
-
-        // Lehenegoa bidaien bidaien panela itxaroten du, bigarrena bidaiarik ez badago agertzen da. Bigarrena atazkatuta ez geratzeko erabiltzen da
-        await this.page.waitForSelector("div.m6QErb:nth-child(4), .hBX6ld")
-
-        // Cookiak lortzeko
-        // const cookies = await this.page.cookies();
-        // await fs.writeFile('./cookies.json', JSON.stringify(cookies, null, 2));
-    }
 
     async openPreference(pref) {
         console.log("-> Preference: " + pref)
@@ -220,9 +191,5 @@ class Puppet {
 
         console.log("\tPreferences closed.")
     }
-
-    async close() {
-        await this.browser.close();
-    }
 }
-exports.Puppet = Puppet;
+exports.PuppetPage = PuppetPage;
