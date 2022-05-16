@@ -16,3 +16,5 @@ for (var garraioa = 0; garraioa < json.length; garraioa++) {
 }
 
 fs.writeFileSync('Test.json', JSON.stringify(final_json, null, 2));
+
+// change to trigger docker rebuild
